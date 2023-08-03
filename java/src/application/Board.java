@@ -1,0 +1,464 @@
+package application;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+
+import application.Pieces.*;
+import processing.core.PApplet;
+import processing.core.PImage;
+
+public class Board{
+    PApplet p;
+    PImage pieceImg;
+    private float squareW;
+    private float border;
+    private Square[] squares = new Square[64];
+    private boolean[] potentialMoves = new boolean[64];
+    private boolean whiteStart;
+    private float half;
+    private ArrayList<String> movesMade;
+    private String whitesMove;
+    private String blacksMove;
+    private int moveCounter;
+    private int moveCounterLog;
+    Square lastEnpassantSquare;
+    int enpassantStep = 0;
+    String movex;
+    Rules rules;
+    
+
+    public Board(PApplet p, boolean whiteStart){
+        this.p = p;
+        this.border = 55f;
+        this.whiteStart = whiteStart;
+        float scale = 0.87f;
+        this.squareW = (p.width / 8) * scale;
+        this.half = squareW / 2;
+        this.movesMade = new ArrayList<>();
+        this.moveCounter = 1;
+        this.moveCounterLog = 1;
+        movex = String.valueOf(moveCounterLog + ". ");
+        lastEnpassantSquare = null;
+        rules = Rules.getInstance();
+    
+
+        
+        for(int i = 0; i < 8; i++){
+            for(int j = 0; j < 8; j++){
+                int c;
+                if ((i + j) % 2 == 0) {
+                    c = p.color(218, 217, 181);
+                } else {
+                    c = p.color(128, 163, 82);
+                }
+                
+                if(whiteStart){
+                    squares[j + (i * 8)] = new Square((toChar(i + 1) + String.valueOf(8 - j)).toLowerCase(), c, i * squareW + border, j * squareW + border, null);
+                } else{
+                    squares[j + (i * 8)] = new Square((toChar(i + 1) + String.valueOf(j + 1)).toLowerCase(), c, i * squareW + border, j * squareW + border, null);
+                }
+                Piece calcPiece = calculatePiece(squares[j + (i * 8)]);
+
+                if(calcPiece != null){
+                    squares[j + (i * 8)].setPiece(calcPiece);
+                }
+                
+
+            }
+        }
+    }
+
+    public void applyMove(int moveIndex, int previousIndex){
+        SpecialFlags flag = null;
+        Piece p = squares[previousIndex].getPiece();
+
+        // Piece taken via enpassant
+        if(squares[moveIndex].isEnpassantSquare() && p instanceof Pawn){
+            int i = Arrays.asList(squares).indexOf(lastEnpassantSquare);
+            squares[i + enpassantStep].setPiece(null);
+            squares[moveIndex].setEnpassantSquare(false);
+            flag = SpecialFlags.CAPTURE;
+        }else{
+            if(lastEnpassantSquare != null){
+                lastEnpassantSquare.setEnpassantSquare(false);
+                lastEnpassantSquare = null;
+            }
+        }
+
+        // Check if a capture has been made
+        if(squares[moveIndex].getPiece() != null)
+            flag = SpecialFlags.CAPTURE;
+
+        if(p instanceof Pawn){
+            // Check to see if the pawn moved two squares
+            if(Math.abs(moveIndex - previousIndex) == 2){
+                lastEnpassantSquare = squares[previousIndex + p.getStep()];
+                enpassantStep = p.getStep();
+                lastEnpassantSquare.setEnpassantSquare(true);
+            }
+
+            ((Pawn) p).setStartingPos(false);
+
+        }
+
+        if(p instanceof King){
+            // See if the king is in check
+            if(rules.isInCheck()){
+                // Check to see if the king has successfully escaped CHECK
+                if(!rules.isInCheck(squares, rules.attackPiece, moveIndex)){
+                    rules.checkResolved();
+                }
+            } 
+
+            /*
+             * Check KING SIDE CASTLING
+             * 8 indicates 1 row over, 16 indicates two rows over etc
+             * The square index is the move selected by the player 
+             * 
+             * If one of the potential moves is a castling indicating move
+             * then it is executed
+             */
+            
+            int kingIndex = previousIndex;
+            if((kingIndex + 16) == moveIndex){
+                flag = SpecialFlags.KING_SIDE_CASTLING;
+                squares[kingIndex + 8].setPiece(squares[kingIndex + 24].getPiece());
+                squares[kingIndex + 24].setPiece(null);
+            }
+
+            // Check QUEEN SIDE CASTLING
+            if((kingIndex - 16) == moveIndex){
+                flag = SpecialFlags.QUEEN_SIDE_CASTLING;
+                squares[kingIndex - 8].setPiece(squares[kingIndex - 32].getPiece());
+                squares[kingIndex - 32].setPiece(null);
+            }
+
+            ((King) p).setKingMoved(true);
+
+        }
+
+        registerMove(previousIndex, moveIndex, flag, true);
+        squares[moveIndex].setPiece(p);
+        moveCounter++;
+
+        rules.isInCheck(squares, moveIndex);
+
+    }
+
+
+    public void plotPotentialMoves(Square square){
+        potentialMoves = square.retrievePossibleMoves(squares);
+        plotMoves();
+    }
+
+    public void renderPossibleCheckSolutions(Square selected){
+        // If the king can escape check by making a king move
+        if(selected.getPiece().getPieceName() == PieceType.KING) {
+            potentialMoves = ((King) selected.getPiece()).solveCheck(squares);
+
+        } 
+        else{
+            // See if the king can block the check by moving another piece on the board
+            potentialMoves = ((King) selected.getPiece()).blockCheck(squares, selected);
+        }
+
+        plotMoves();
+    }
+
+    private void plotMoves(){
+        for(int i = 0; i < potentialMoves.length; i++){
+            renderPotentialMoves(i);
+        }
+    }
+
+
+    // RENDERING FUNCTIONS
+    public void renderPotentialMoves(int index){
+        if(potentialMoves[index] && squares[index].getPiece() == null){
+            p.fill(100, 100, 100);
+            p.circle(squares[index].getX() + half, squares[index].getY() + half, 25);
+        }
+
+        if(potentialMoves[index] && squares[index].getPiece() != null){
+            // Color indicating that a king is in check
+            if(squares[index].getPiece().getPieceName() == PieceType.KING){
+                squares[index].setColor(p.color(255, 77, 77));
+            } else{
+                // Color indicating that a piece can be taken
+                squares[index].setColor(p.color(217, 140, 217));
+            }
+        }
+    }
+
+    private char toChar(int u){  
+        return (char)(u + 64);
+    }
+
+    private void renderNumbering(int i, float x){
+        p.fill(255);
+        // bottom letters
+        p.text(toChar(i + 1), x + 35, p.height - 20);
+
+        // top letters
+        p.text(toChar(i + 1), x + 35, 40);
+
+        if(whiteStart){
+            //left numbering
+            p.text(8 - i, 20, x + 50);
+
+            // right numbering
+            p.text(8 - i, p.width - 30, x + 50);
+        } else{
+            //left numbering
+            p.text(i + 1, 20, x + 50);
+
+            // right numbering
+            p.text(i + 1, p.width - 30, x + 50);
+        }
+    }
+
+    private void renderPieces(){
+        for(Square s : squares){
+            Piece eachPiece = s.getPiece();
+            if(eachPiece != null){
+                pieceImg = p.loadImage(eachPiece.getImgPath());
+                p.image(pieceImg, s.getX(), s.getY(), eachPiece.getSize(), eachPiece.getSize());
+            }
+        }
+    }
+
+    public void renderBoard(){
+        p.background(0);
+        for(int i = 0; i < 8; i++){
+            p.stroke(255);
+            float x = i * squareW + border;
+            renderNumbering(i, x);
+
+            p.noStroke();
+            for(int j = 0; j < 8; j++){
+                Square s = squares[j + (i * 8)];
+                float y = j * squareW + border;
+                p.fill(s.getColor());
+                p.square(x, y, squareW);
+                renderPotentialMoves(j + (i * 8));
+                p.fill(0);
+
+                //testing
+                // p.text(j + (i * 8), x + half, y + half);
+            }
+        }
+
+        renderPieces();
+    }
+
+    private void registerMove(int prevSquare, int newSquare, SpecialFlags flag, boolean whiteToMove){
+        String prevPieceName = "";
+        String movePieceName = "";
+        movex = "";
+
+        String prevSquareName = squares[prevSquare].getId();
+        String moveSquareName = squares[newSquare].getId();
+
+        // Check to see if there are a piece on either of the two squares
+        if(squares[newSquare].getPiece() != null && squares[newSquare].getPiece().getPieceName() != PieceType.PAWN){
+            movePieceName = String.valueOf(squares[newSquare].getPiece().getPieceName());
+        }
+
+        if(squares[prevSquare].getPiece() != null && squares[prevSquare].getPiece().getPieceName() != PieceType.PAWN){
+            prevPieceName = String.valueOf(squares[prevSquare].getPiece().getPieceName());
+        }
+
+
+        if(prevPieceName != "" && !prevPieceName.matches("PAWN")){
+            prevPieceName = (
+                String.valueOf(squares[prevSquare].getPiece().getPieceName()).matches("KNIGHT") ? "N" 
+                : String.valueOf(Character.toUpperCase(prevPieceName.charAt(0)))                          
+            );
+        } else{
+            if(!prevPieceName.matches("PAWN")){
+                prevPieceName += prevSquareName;
+            }
+
+        }
+
+        if(movePieceName != "" && !movePieceName.matches("PAWN")){ 
+            movePieceName = (
+                movePieceName.matches("KNIGHT") ? "N" 
+                : String.valueOf(Character.toUpperCase(movePieceName.charAt(0)))                          
+            );
+
+        }else{
+            if(!movePieceName.matches("PAWN")){
+                movePieceName += moveSquareName;
+            }
+        }
+
+        if(flag != null){
+            switch(flag){
+                case KING_SIDE_CASTLING:
+                    movex = "O-O";
+                    break;
+
+                case QUEEN_SIDE_CASTLING:
+                    movex = "O-O-O";
+                    break;
+
+                case PROMOTION:
+                    break;
+
+                case CAPTURE:
+                    // Example capture log - Nxd5
+                    movex = prevPieceName.charAt(0) + "x" + moveSquareName;
+                    break;
+
+                case CHECK: 
+                    break;
+
+                case CHECK_MATE:
+                    break;
+            }
+
+        }else{
+            if(squares[prevSquare].getPiece() instanceof Pawn){
+                // If its just a pawn move just register the move square i.e., d4, d5 etc
+                movex = moveSquareName;
+            } else{
+                // If its a non pawn move concatenate the piece name and the move square i.e., Nd5
+                movex = prevPieceName + moveSquareName;
+            }
+            
+        }
+
+        if(whitesMove == null){
+            whitesMove = movex;
+        }
+        
+        else if(blacksMove == null){
+            blacksMove = movex;
+            String moveList = moveCounterLog + ".) " + whitesMove + " " + blacksMove;
+            // System.out.println(moveList);
+            movesMade.add(moveList);
+            whitesMove = null;
+            blacksMove = null;
+            moveCounterLog++;
+        }
+
+    }
+
+    private Piece calculatePiece(Square s){
+        if(s == null) return null;
+        char[] id = s.getId().toCharArray();
+        String squareName = s.getId().toUpperCase();
+        if(id[1] == '2'){
+            return new Pawn(PieceType.PAWN, ChessSymbols.WHITE_CHESS_PAWN, "WHITE", ChessSymbols.WHITE_CHESS_PAWN_IMG);
+        }
+
+        if(id[1] == '7'){
+            return new Pawn(PieceType.PAWN, ChessSymbols.BLACK_CHESS_PAWN, "BLACK", ChessSymbols.BLACK_CHESS_PAWN_IMG);
+        }
+
+        if(squareName.equals("E1")){
+            return new King(PieceType.KING, ChessSymbols.WHITE_CHESS_KING, "WHITE", ChessSymbols.WHITE_CHESS_KING_IMG);
+        }
+
+        if(squareName.equals("D1")){
+            return new Queen(PieceType.QUEEN, ChessSymbols.WHITE_CHESS_QUEEN, "WHITE", ChessSymbols.WHITE_CHESS_QUEEN_IMG);
+        }
+
+        if((squareName.equals("C1")) || squareName.equals("F1")){
+            return new Bishop(PieceType.BISHOP, ChessSymbols.WHITE_CHESS_BISHOP, "WHITE", ChessSymbols.WHITE_CHESS_BISHOP_IMG);
+        }
+
+        if(squareName.equals("B1") || squareName.equals("G1")){
+            return new Knight(PieceType.KNIGHT, ChessSymbols.WHITE_CHESS_KNIGHT, "WHITE", ChessSymbols.WHITE_CHESS_KNIGHT_IMG);
+        }
+
+        if(squareName.equals("A1") || squareName.equals("H1")){
+            return new Rook(PieceType.ROOK, ChessSymbols.WHITE_CHESS_ROOK, "WHITE", ChessSymbols.WHITE_CHESS_ROOK_IMG);
+        }
+
+        if(squareName.equals("E8")){
+            return new King(PieceType.KING, ChessSymbols.BLACK_CHESS_KING, "BLACK", ChessSymbols.BLACK_CHESS_KING_IMG);
+        }
+
+        if(squareName.equals("D8")){
+            return new Queen(PieceType.QUEEN, ChessSymbols.BLACK_CHESS_QUEEN, "BLACK", ChessSymbols.BLACK_CHESS_QUEEN_IMG);
+        }
+
+        if(squareName.equals("C8") || squareName.equals("F8")){
+            return new Bishop(PieceType.BISHOP, ChessSymbols.BLACK_CHESS_BISHOP, "BLACK", ChessSymbols.BLACK_CHESS_BISHOP_IMG);
+        }
+
+        if(squareName.equals("B8") ||squareName.equals("G8")){
+            return new Knight(PieceType.KNIGHT, ChessSymbols.BLACK_CHESS_KNIGHT, "BLACK", ChessSymbols.BLACK_CHESS_KNIGHT_IMG);
+        }
+
+        if(squareName.equals("A8") || squareName.equals("H8")){
+            return new Rook(PieceType.ROOK, ChessSymbols.BLACK_CHESS_ROOK, "BLACK", ChessSymbols.BLACK_CHESS_ROOK_IMG);
+        }
+        
+        return null;
+    }
+
+
+    public float getSquareW() {
+        return squareW;
+    }
+
+    public void setSquareW(float squareW) {
+        this.squareW = squareW;
+    }
+
+    public float getBorder() {
+        return border;
+    }
+
+    public void setBorder(float border) {
+        this.border = border;
+    }
+
+    public Square[] getSquares() {
+        return squares;
+    }
+
+    public void setSquares(Square[] squares) {
+        this.squares = squares;
+    }
+
+    public boolean[] getPotentialMoves() {
+        return potentialMoves;
+    }
+
+    public void setPotentialMoves(boolean[] potentialMoves) {
+        this.potentialMoves = potentialMoves;
+    }
+
+    public float getHalf() {
+        return half;
+    }
+
+    public void setHalf(float half) {
+        this.half = half;
+    }
+
+    public ArrayList<String> getMovesMade() {
+        return movesMade;
+    }
+
+    public void setMovesMade(ArrayList<String> movesMade) {
+        this.movesMade = movesMade;
+    }
+
+    public int getMoveCounter() {
+        return moveCounter;
+    }
+
+    public void setMoveCounter(int moveCounter) {
+        this.moveCounter = moveCounter;
+    }
+
+    
+    
+
+    
+}
