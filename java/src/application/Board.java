@@ -2,7 +2,6 @@ package application;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-
 import application.Pieces.*;
 import processing.core.PApplet;
 import processing.core.PImage;

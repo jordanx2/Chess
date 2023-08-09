@@ -1,5 +1,7 @@
 package application;
 
+import java.util.Arrays;
+
 import application.Pieces.*;
 
 public class Rules {
@@ -25,8 +27,6 @@ public class Rules {
 
         return instance;
     }
-
-
 
     public boolean isInCheck(Square[] board, int attackIndex){
         boolean[] attackMoves = board[attackIndex].retrievePossibleMoves(board);
@@ -76,6 +76,51 @@ public class Rules {
         indexKingInCheck = -1;
         inCheck = false;
         colorPieceInCheck = null;
+    }
+
+    public boolean isPiecePinned(Square[] board, Square selected){
+        // Find the index of the king potentially under attack
+        String color = selected.getPiece().getColor();
+        int pinnedKing = -1;
+        kingFind: for(int i = 0; i < board.length; i++){
+            if(board[i].getPiece() != null){
+                if(board[i].getPiece().getPieceName() == PieceType.KING && board[i].getPiece().getColor().matches(color)){
+                    pinnedKing = i;
+                    break kingFind;
+                }
+            }
+
+        }
+
+        Piece temp1 = selected.getPiece();
+        Piece temp2 = null;
+        int index = Arrays.asList(board).indexOf(selected);
+        boolean[] selectedMoves = selected.retrievePossibleMoves(board);
+
+        int moveIndex = 0;
+        findFirstMove: for(int i = 0; i < selectedMoves.length; i++){
+            if(selectedMoves[i]){
+                moveIndex = i;
+                break findFirstMove;
+            }
+        }
+
+        temp2 = board[moveIndex].getPiece();
+        board[index].setPiece(null);
+        board[moveIndex].setPiece(temp1);
+
+        boolean safeMove = true;
+        safeCheck: for(int i = 0; i < board.length; i++){
+            if(board[i].getPiece() != null && isInCheck(board, i, pinnedKing)){
+                safeMove = false;
+                break safeCheck;
+            }
+        }
+
+        board[index].setPiece(temp1);
+        board[moveIndex].setPiece(temp2);
+
+        return safeMove;
     }
 
 
