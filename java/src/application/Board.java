@@ -69,7 +69,10 @@ public class Board{
     }
 
     public void applyMove(int moveIndex, int previousIndex){
-        SpecialFlags flag = null;
+        SpecialFlags flag1 = null;
+
+        // Flag2 is for when there is a capture as well as a check for example
+        SpecialFlags flag2 = null;
         Piece p = squares[previousIndex].getPiece();
 
         // Piece taken via enpassant
@@ -77,7 +80,7 @@ public class Board{
             int i = Arrays.asList(squares).indexOf(lastEnpassantSquare);
             squares[i + enpassantStep].setPiece(null);
             squares[moveIndex].setEnpassantSquare(false);
-            flag = SpecialFlags.CAPTURE;
+            flag1 = SpecialFlags.CAPTURE;
         }else{
             if(lastEnpassantSquare != null){
                 lastEnpassantSquare.setEnpassantSquare(false);
@@ -87,7 +90,8 @@ public class Board{
 
         // Check if a capture has been made
         if(squares[moveIndex].getPiece() != null)
-            flag = SpecialFlags.CAPTURE;
+            flag1 = SpecialFlags.CAPTURE;
+            flag2 = SpecialFlags.CAPTURE;
 
         if(p instanceof Pawn){
             // Check to see if the pawn moved two squares
@@ -113,14 +117,14 @@ public class Board{
             
             int kingIndex = previousIndex;
             if((kingIndex + 16) == moveIndex){
-                flag = SpecialFlags.KING_SIDE_CASTLING;
+                flag1 = SpecialFlags.KING_SIDE_CASTLING;
                 squares[kingIndex + 8].setPiece(squares[kingIndex + 24].getPiece());
                 squares[kingIndex + 24].setPiece(null);
             }
 
             // Check QUEEN SIDE CASTLING
             if((kingIndex - 16) == moveIndex){
-                flag = SpecialFlags.QUEEN_SIDE_CASTLING;
+                flag1 = SpecialFlags.QUEEN_SIDE_CASTLING;
                 squares[kingIndex - 8].setPiece(squares[kingIndex - 32].getPiece());
                 squares[kingIndex - 32].setPiece(null);
             }
@@ -135,10 +139,10 @@ public class Board{
         
         // Check to see if the move that is being made is a CHECK move
         if(rules.isInCheck(squares, moveIndex)){
-            flag = SpecialFlags.CHECK;
+            flag1 = SpecialFlags.CHECK;
         }
 
-        registerMove(previousIndex, moveIndex, flag, true);
+        registerMove(previousIndex, moveIndex, flag1, flag2, true);
 
     }
 
@@ -156,14 +160,8 @@ public class Board{
         } 
         else{
             // See if the king can block the check by moving another piece on the board
-            BlockCheck blockCheck = selected.getPiece().blockCheck(squares, selected);
-
-            if(blockCheck.isBlockCheck()){
-                // May not be needed, but just in case
-                Arrays.fill(potentialMoves, false);
-                potentialMoves[blockCheck.getBlockCheckIndex()] = true;
-                
-            }
+            Arrays.fill(potentialMoves, false);
+            potentialMoves = selected.getPiece().blockCheck(squares, selected);    
         }
 
         plotMoves();
@@ -255,7 +253,7 @@ public class Board{
         renderPieces();
     }
 
-    private void registerMove(int prevSquare, int newSquare, SpecialFlags flag, boolean whiteToMove){
+    private void registerMove(int prevSquare, int newSquare, SpecialFlags flag, SpecialFlags flag2,  boolean whiteToMove){
         String prevPieceName = "";
         String movePieceName = "";
         movex = "";
@@ -316,7 +314,11 @@ public class Board{
                     break;
 
                 case CHECK: 
-                    movex = prevPieceName.charAt(0) + moveSquareName + "+";
+                    if(flag2 == SpecialFlags.CAPTURE){
+                        movex = prevPieceName.charAt(0) + "x" + moveSquareName + "+";
+                    } else{
+                        movex = prevPieceName.charAt(0) + moveSquareName + "+";
+                    }
                     break;
 
                 case CHECK_MATE:
@@ -341,7 +343,8 @@ public class Board{
         else if(blacksMove == null){
             blacksMove = movex;
             String moveList = moveCounterLog + ".) " + whitesMove + " " + blacksMove;
-            System.out.println(moveList);
+            // print movelist
+            // System.out.println(moveList);
             movesMade.add(moveList);
             whitesMove = null;
             blacksMove = null;

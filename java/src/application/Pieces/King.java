@@ -3,7 +3,6 @@ package application.Pieces;
 import java.util.Arrays;
 
 import application.Square;
-import application.BlockCheck;
 import application.Rules;
 
 public class King extends Piece{
@@ -138,7 +137,7 @@ public class King extends Piece{
     }
 
     @Override
-    public BlockCheck blockCheck(Square[] board, Square square) {
+    public boolean[] blockCheck(Square[] board, Square square) {
         throw new UnsupportedOperationException("Unimplemented method 'blockCheck'");
     }
     

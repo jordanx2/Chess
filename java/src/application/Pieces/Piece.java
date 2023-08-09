@@ -1,6 +1,5 @@
 package application.Pieces;
 
-import application.BlockCheck;
 import application.Rules;
 import application.Square;
 
@@ -33,7 +32,7 @@ public abstract class Piece {
 
     public abstract boolean[] possibleMoves(Square[] board, Square square);
 
-    public abstract BlockCheck blockCheck(Square[] board, Square square);
+    public abstract boolean[] blockCheck(Square[] board, Square square);
     
 
     public float getSize() {

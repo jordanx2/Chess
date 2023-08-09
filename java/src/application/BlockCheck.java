@@ -2,9 +2,9 @@ package application;
 
 public class BlockCheck {
     private boolean blockCheck;
-    private int blockCheckIndex;
+    private boolean[] blockCheckIndex;
 
-    public BlockCheck(boolean blockCheck, int blockCheckIndex){
+    public BlockCheck(boolean blockCheck, boolean[] blockCheckIndex){
         this.blockCheck = blockCheck;
         this.blockCheckIndex = blockCheckIndex;
     }
@@ -17,14 +17,12 @@ public class BlockCheck {
         this.blockCheck = blockCheck;
     }
 
-    public int getBlockCheckIndex() {
+    public boolean[] getBlockCheckIndex() {
         return blockCheckIndex;
     }
 
-    public void setBlockCheckIndex(int blockCheckIndex) {
+    public void setBlockCheckIndex(boolean[] blockCheckIndex) {
         this.blockCheckIndex = blockCheckIndex;
     }
-
-    
 
 }

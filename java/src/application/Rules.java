@@ -49,6 +49,11 @@ public class Rules {
     }
 
     public boolean canBlockCheck(Square[] board, int previousPieceSquare, int potentialBlockCheckSquare){
+        Piece temp = null;
+        if(board[potentialBlockCheckSquare].getPiece() != null){
+            temp = board[potentialBlockCheckSquare].getPiece();
+        }
+
         // Make the potential move to see if it solves the check
         board[potentialBlockCheckSquare].setPiece(board[previousPieceSquare].getPiece());
 
@@ -62,7 +67,7 @@ public class Rules {
         boolean solvesCheck = !isInCheck(board, attackPiece, indexKingInCheck);
 
         // Undo the move as this function doesn't deal with making moves
-        board[potentialBlockCheckSquare].setPiece(null);
+        board[potentialBlockCheckSquare].setPiece(temp);
         return solvesCheck;
         
     }

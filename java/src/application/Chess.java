@@ -71,7 +71,7 @@ public class Chess extends PApplet{
                     if(Rules.getInstance().isInCheck()){
                         Rules.getInstance().checkResolved();
                     }
-                    
+
                     board.applyMove(i, Arrays.asList(boardSquares).indexOf(selected));
                     selected.setPiece(null);
                     board.setSquares(boardSquares);

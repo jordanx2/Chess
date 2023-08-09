@@ -1,8 +1,6 @@
 package application.Pieces;
 
 import java.util.Arrays;
-
-import application.BlockCheck;
 import application.Square;
 
 public class Pawn extends Piece{
@@ -72,8 +70,8 @@ public class Pawn extends Piece{
     }
 
     @Override
-    public BlockCheck blockCheck(Square[] board, Square square) {
-        BlockCheck blockCheck = new BlockCheck(false, -1);
+    public boolean[] blockCheck(Square[] board, Square square) {
+        boolean[] blocks = new boolean[64];
         int idx = Arrays.asList(board).indexOf(square);
         boolean[] possibleCheckBlocks = calculateMainPawnMovement(board, idx, getMoves());
         
@@ -84,9 +82,7 @@ public class Pawn extends Piece{
             int attackIndex = idx + step + offset;
         
             if (attackIndex >= 0 && attackIndex <= 63 && attackIndex == rules.attackPiece) {
-                blockCheck.setBlockCheck(true);
-                blockCheck.setBlockCheckIndex(attackIndex);
-                return blockCheck;
+                blocks[attackIndex] = true;
             }
         }
 
@@ -94,15 +90,13 @@ public class Pawn extends Piece{
         for(int i = 0; i < possibleCheckBlocks.length; i++) {            
             if(possibleCheckBlocks[i]){
                 if(rules.canBlockCheck(board, idx, i)){
-                    blockCheck.setBlockCheck(true);
-                    blockCheck.setBlockCheckIndex(i);
-                    return blockCheck;
+                    blocks[i] = true;
 
                 }
             }   
         }
 
-        return blockCheck;
+        return blocks;
 
     }
 
