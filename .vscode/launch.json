@@ -5,6 +5,13 @@
             "name": "Main",
             "request": "launch",
             "mainClass": "application.Main",
+            "projectName": "Chess_7e652465"
+        },
+        {
+            "type": "java",
+            "name": "Main",
+            "request": "launch",
+            "mainClass": "application.Main",
             "projectName": "processing-sketches_c0d1d799"
         },
         {

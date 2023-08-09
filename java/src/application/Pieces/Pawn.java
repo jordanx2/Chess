@@ -2,6 +2,7 @@ package application.Pieces;
 
 import java.util.Arrays;
 
+import application.BlockCheck;
 import application.Square;
 
 public class Pawn extends Piece{
@@ -23,28 +24,7 @@ public class Pawn extends Piece{
         Arrays.fill(moves, false);
         int index = Arrays.asList(board).indexOf(square);
 
-        // Promotion
-        if(getMovement().isFirstOrLastColumn(index)){
-            System.out.println("PROMOTE");
-            return moves;
-        }
-
-        Piece piece = board[index + step].getPiece();
-
-        if(startingPos){
-            if(piece == null && board[index + (step * 2)].getPiece() == null){
-                moves[index + step] = true;
-                moves[index + (step * 2)] = true;
-            }
-
-            else if(piece == null && board[index + (step * 2)].getPiece() != null){
-                moves[index + step] = true;
-            }
-        } else{
-            if(piece == null){
-                moves[index + step] = true;
-            }
-        }
+        moves = calculateMainPawnMovement(board, index, moves);
 
         // Calculate attack moves
         int rightAttack = (index + step) + 8;
@@ -74,6 +54,58 @@ public class Pawn extends Piece{
         return moves;
     }
 
+    private boolean[] calculateMainPawnMovement(Square[] board, int index, boolean[] moves){
+        Piece piece = board[index + step].getPiece();
+
+        if(startingPos){
+            if(piece == null && board[index + (step * 2)].getPiece() == null){
+                moves[index + step] = true;
+                moves[index + (step * 2)] = true;
+            }
+        } else{
+            if(piece == null){
+                moves[index + step] = true;
+            }
+        }
+
+        return moves;
+    }
+
+    @Override
+    public BlockCheck blockCheck(Square[] board, Square square) {
+        BlockCheck blockCheck = new BlockCheck(false, -1);
+        int idx = Arrays.asList(board).indexOf(square);
+        boolean[] possibleCheckBlocks = calculateMainPawnMovement(board, idx, getMoves());
+        
+        // Check to see if the pawn can capture the attacking piece
+        int[] attackOffsets = {8, -8}; // Offsets for right and left attacks
+
+        for (int offset : attackOffsets) {
+            int attackIndex = idx + step + offset;
+        
+            if (attackIndex >= 0 && attackIndex <= 63 && attackIndex == rules.attackPiece) {
+                blockCheck.setBlockCheck(true);
+                blockCheck.setBlockCheckIndex(attackIndex);
+                return blockCheck;
+            }
+        }
+
+
+        for(int i = 0; i < possibleCheckBlocks.length; i++) {            
+            if(possibleCheckBlocks[i]){
+                if(rules.canBlockCheck(board, idx, i)){
+                    blockCheck.setBlockCheck(true);
+                    blockCheck.setBlockCheckIndex(i);
+                    return blockCheck;
+
+                }
+            }   
+        }
+
+        return blockCheck;
+
+    }
+
     private boolean checkForEnpassant(Square[] board, int attackSquare, int index, int sameRankCheck){
         // Check if its a square where enpassant is true
         if(board[attackSquare].isEnpassantSquare()){
@@ -91,6 +123,16 @@ public class Pawn extends Piece{
 
         return false;
     }
+
+    
+    // private String pawnPromotion(int index){
+    //     // Promotion
+    //     if(getMovement().isFirstOrLastColumn(index)){
+    //         return "PROMOTE";
+    //     }
+
+    //     return null;
+    // }
 
     public boolean checkEnpassant(){
         return true;
@@ -112,10 +154,4 @@ public class Pawn extends Piece{
         this.step = step;
     }
 
-    @Override
-    public CheckPair blockCheck(Square[] board, Square square) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Unimplemented method 'blockCheck'");
-    }
-    
 }

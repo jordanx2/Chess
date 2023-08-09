@@ -1,6 +1,8 @@
 package application.Pieces;
 
 import java.util.Arrays;
+
+import application.BlockCheck;
 import application.Square;
 
 public class Knight extends Piece{
@@ -34,9 +36,10 @@ public class Knight extends Piece{
     }
 
     @Override
-    public CheckPair blockCheck(Square[] board, Square square) {
+    public BlockCheck blockCheck(Square[] board, Square square) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Unimplemented method 'blockCheck'");
     }
+
     
 }

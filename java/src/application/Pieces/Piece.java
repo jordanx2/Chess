@@ -1,5 +1,7 @@
 package application.Pieces;
 
+import application.BlockCheck;
+import application.Rules;
 import application.Square;
 
 public abstract class Piece {
@@ -12,6 +14,7 @@ public abstract class Piece {
     private int step;
     private BoundsCheck check;
     private Movement movement;
+    Rules rules;
 
     public Piece(PieceType pieceName, String pieceUnicode, String color, String imgPath) {
         this.pieceName = pieceName;
@@ -25,9 +28,13 @@ public abstract class Piece {
         this.step = (color.equals("WHITE")) ? -1 : 1;
         this.check = new BoundsCheck();
         this.movement = new Movement();
+        this.rules = Rules.getInstance();
     }
 
     public abstract boolean[] possibleMoves(Square[] board, Square square);
+
+    public abstract BlockCheck blockCheck(Square[] board, Square square);
+    
 
     public float getSize() {
         return size;

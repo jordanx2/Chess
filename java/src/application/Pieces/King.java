@@ -3,6 +3,7 @@ package application.Pieces;
 import java.util.Arrays;
 
 import application.Square;
+import application.BlockCheck;
 import application.Rules;
 
 public class King extends Piece{
@@ -10,7 +11,6 @@ public class King extends Piece{
     private boolean kingMoved;
     private boolean inCheck;
     private boolean inCheckMate;
-    private Rules rules;
 
 
     public void setInCheckMate(boolean inCheckMate) {
@@ -22,7 +22,6 @@ public class King extends Piece{
         this.kingMoved = false;
         this.inCheck = false;
         this.inCheckMate = false;
-        this.rules = Rules.getInstance();
     }
 
     @Override
@@ -139,11 +138,8 @@ public class King extends Piece{
     }
 
     @Override
-    public CheckPair blockCheck(Square[] board, Square square) {
+    public BlockCheck blockCheck(Square[] board, Square square) {
         throw new UnsupportedOperationException("Unimplemented method 'blockCheck'");
     }
-
-    
-
     
 }

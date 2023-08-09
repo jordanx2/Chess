@@ -2,6 +2,7 @@ package application.Pieces;
 
 import java.util.Arrays;
 
+import application.BlockCheck;
 import application.Square;
 
 public class Bishop extends Piece {
@@ -17,6 +18,11 @@ public class Bishop extends Piece {
         int index = Arrays.asList(board).indexOf(square);
         setMoves(getMovement().BishopMovement(board, index, getMoves()));
         return getMoves();
+    }
+
+    @Override
+    public BlockCheck blockCheck(Square[] board, Square square) {
+        throw new UnsupportedOperationException("Unimplemented method 'blockCheck'");
     }
     
 }

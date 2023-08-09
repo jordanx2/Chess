@@ -48,6 +48,25 @@ public class Rules {
         return board[attackIndex].retrievePossibleMoves(board)[kingIndex];
     }
 
+    public boolean canBlockCheck(Square[] board, int previousPieceSquare, int potentialBlockCheckSquare){
+        // Make the potential move to see if it solves the check
+        board[potentialBlockCheckSquare].setPiece(board[previousPieceSquare].getPiece());
+
+        /*
+         * isInCheck returns true if the king is still in check.
+         * So, if isInCheck returns false then return true from this function
+         * indicating that the move can block the check
+         * 
+         */
+
+        boolean solvesCheck = !isInCheck(board, attackPiece, indexKingInCheck);
+
+        // Undo the move as this function doesn't deal with making moves
+        board[potentialBlockCheckSquare].setPiece(null);
+        return solvesCheck;
+        
+    }
+
     public void checkResolved(){
         indexKingInCheck = -1;
         inCheck = false;

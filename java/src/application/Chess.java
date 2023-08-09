@@ -8,7 +8,7 @@ public class Chess extends PApplet{
     Square[] boardSquares;
     Square selected;
     boolean whiteToMove;
-    boolean TESTING = true;
+    boolean TESTING = false;
     Rules rules;
 
 
@@ -64,11 +64,14 @@ public class Chess extends PApplet{
     }
 
     public boolean isMoveMade(){
-        // System.out.println("testing: " + Rules.getInstance().isInCheck());
         if(checkSelected()){    
             boolean[] potentialMoves = board.getPotentialMoves();
             for(int i = 0; i < potentialMoves.length; i++){
                 if(checkBounds(boardSquares[i].getX(), boardSquares[i].getY()) && potentialMoves[i]){
+                    if(Rules.getInstance().isInCheck()){
+                        Rules.getInstance().checkResolved();
+                    }
+                    
                     board.applyMove(i, Arrays.asList(boardSquares).indexOf(selected));
                     selected.setPiece(null);
                     board.setSquares(boardSquares);
@@ -83,7 +86,7 @@ public class Chess extends PApplet{
     }
 
     public boolean checkIfPieceSelected(){
-        if(isMoveMade()){  
+        if(isMoveMade()){
             return false; 
         }
 

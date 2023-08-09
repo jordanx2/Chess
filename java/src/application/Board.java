@@ -102,14 +102,6 @@ public class Board{
         }
 
         if(p instanceof King){
-            // See if the king is in check
-            if(rules.isInCheck()){
-                // Check to see if the king has successfully escaped CHECK
-                if(!rules.isInCheck(squares, rules.attackPiece, moveIndex)){
-                    rules.checkResolved();
-                }
-            } 
-
             /*
              * Check KING SIDE CASTLING
              * 8 indicates 1 row over, 16 indicates two rows over etc
@@ -137,11 +129,16 @@ public class Board{
 
         }
 
-        registerMove(previousIndex, moveIndex, flag, true);
+
         squares[moveIndex].setPiece(p);
         moveCounter++;
+        
+        // Check to see if the move that is being made is a CHECK move
+        if(rules.isInCheck(squares, moveIndex)){
+            flag = SpecialFlags.CHECK;
+        }
 
-        rules.isInCheck(squares, moveIndex);
+        registerMove(previousIndex, moveIndex, flag, true);
 
     }
 
@@ -159,7 +156,14 @@ public class Board{
         } 
         else{
             // See if the king can block the check by moving another piece on the board
-            potentialMoves = ((King) selected.getPiece()).blockCheck(squares, selected);
+            BlockCheck blockCheck = selected.getPiece().blockCheck(squares, selected);
+
+            if(blockCheck.isBlockCheck()){
+                // May not be needed, but just in case
+                Arrays.fill(potentialMoves, false);
+                potentialMoves[blockCheck.getBlockCheckIndex()] = true;
+                
+            }
         }
 
         plotMoves();
@@ -312,6 +316,7 @@ public class Board{
                     break;
 
                 case CHECK: 
+                    movex = prevPieceName.charAt(0) + moveSquareName + "+";
                     break;
 
                 case CHECK_MATE:
@@ -336,7 +341,7 @@ public class Board{
         else if(blacksMove == null){
             blacksMove = movex;
             String moveList = moveCounterLog + ".) " + whitesMove + " " + blacksMove;
-            // System.out.println(moveList);
+            System.out.println(moveList);
             movesMade.add(moveList);
             whitesMove = null;
             blacksMove = null;
