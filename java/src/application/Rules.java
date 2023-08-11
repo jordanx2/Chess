@@ -78,10 +78,13 @@ public class Rules {
         colorPieceInCheck = null;
     }
 
-    public boolean isPiecePinned(Square[] board, Square selected){
-        // Find the index of the king potentially under attack
+    // Function to determine if a move is made that puts its own king in danger
+    public boolean[] parseSafeMoves(Square[] board, Square selected, boolean[] possibleMoves){
+        // Get the color of the selected piece
         String color = selected.getPiece().getColor();
         int pinnedKing = -1;
+
+        // Find the index of the king potentially under attack
         kingFind: for(int i = 0; i < board.length; i++){
             if(board[i].getPiece() != null){
                 if(board[i].getPiece().getPieceName() == PieceType.KING && board[i].getPiece().getColor().matches(color)){
@@ -92,40 +95,45 @@ public class Rules {
 
         }
 
-        Piece temp1 = selected.getPiece();
-        Piece temp2 = null;
-        int index = Arrays.asList(board).indexOf(selected);
-        boolean[] selectedMoves = selected.retrievePossibleMoves(board);
+        /*
+         * Go through all possible selected square moves
+         * Temporally make each one of those moves
+         * Then see if the selected piece has put its own king in danger
+         * If so, make that move as a non-move 
+         */
+        int selectedIdx = Arrays.asList(board).indexOf(selected);
+        for(int move = 0; move < possibleMoves.length; move++){
+            if(possibleMoves[move]){
+                Piece selectedOg = board[selectedIdx].getPiece();
+                Piece moveTemp = board[move].getPiece();
 
-        int moveIndex = 0;
-        findFirstMove: for(int i = 0; i < selectedMoves.length; i++){
-            if(selectedMoves[i]){
-                moveIndex = i;
-                break findFirstMove;
+                // Temporally make the move
+                board[move].setPiece(selectedOg);
+                board[selectedIdx].setPiece(null);
+
+                for(int square = 0; square < board.length; square++){
+                    if(board[square].getPiece() != null){
+                        if(!board[square].getPiece().getColor().matches(color)){
+                            // See if the temp move has put that selected piece king in danger
+                            if(isInCheck(board, square, pinnedKing)){
+                                // Mark as unplayable move
+                                possibleMoves[move] = false;
+                            }
+                        }
+                    }
+                }
+
+                // Undo the temporary move
+                board[move].setPiece(moveTemp);
+                board[selectedIdx].setPiece(selectedOg);
             }
         }
 
-        temp2 = board[moveIndex].getPiece();
-        board[index].setPiece(null);
-        board[moveIndex].setPiece(temp1);
+        return possibleMoves;
 
-        boolean safeMove = true;
-        safeCheck: for(int i = 0; i < board.length; i++){
-            if(board[i].getPiece() != null && isInCheck(board, i, pinnedKing)){
-                safeMove = false;
-                break safeCheck;
-            }
-        }
-
-        board[index].setPiece(temp1);
-        board[moveIndex].setPiece(temp2);
-
-        return safeMove;
     }
 
-
     public boolean isCheckMate(Square[] board, int kingIndex){
-
         return true;
     }
 
@@ -136,6 +144,5 @@ public class Rules {
     public void setInCheck(boolean inCheck) {
         this.inCheck = inCheck;
     }
-
 
 }

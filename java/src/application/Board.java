@@ -147,7 +147,8 @@ public class Board{
 
 
     public void plotPotentialMoves(Square square){
-        potentialMoves = square.retrievePossibleMoves(squares);
+        // potentialMoves = square.retrievePossibleMoves(squares);
+        potentialMoves = rules.parseSafeMoves(squares, square, square.retrievePossibleMoves(squares));
         plotMoves();
     }
 

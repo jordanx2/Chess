@@ -108,14 +108,7 @@ public class Chess extends PApplet{
 
                             // See if there is a CHECK move made
                             if(!rules.isInCheck()){
-                                // See if by moving a piece will it put its own king into Check
-                                if(rules.isPiecePinned(boardSquares, selected)){
-                                    System.out.println("SAFE");
-                                    renderPossibleMoves();
-                                } else{
-                                    System.out.println("NOT SAFE MOVE");
-                                    removeSelected();
-                                }
+                                renderPossibleMoves();
                             }else{
                                 board.renderPossibleCheckSolutions(selected);
                             }
