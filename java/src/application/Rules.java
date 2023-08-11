@@ -118,6 +118,7 @@ public class Rules {
                             if(isInCheck(board, square, pinnedKing)){
                                 // Mark as unplayable move
                                 possibleMoves[move] = false;
+                                System.out.println("testing1: " + move);
                             }
                         }
                     }
@@ -128,6 +129,8 @@ public class Rules {
                 board[selectedIdx].setPiece(selectedOg);
             }
         }
+
+        System.out.println("--------------------");
 
         return possibleMoves;
 

@@ -8,7 +8,7 @@ public class Chess extends PApplet{
     Square[] boardSquares;
     Square selected;
     boolean whiteToMove;
-    boolean TESTING = false;
+    boolean TESTING = true;
     Rules rules;
 
 

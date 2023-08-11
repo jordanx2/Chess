@@ -60,6 +60,10 @@ public class Pawn extends Piece{
                 moves[index + step] = true;
                 moves[index + (step * 2)] = true;
             }
+
+            else if(piece == null && board[index + (step * 2)].getPiece() != null){
+                moves[index + step] = true;
+            }
         } else{
             if(piece == null){
                 moves[index + step] = true;
