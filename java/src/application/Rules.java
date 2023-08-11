@@ -28,54 +28,53 @@ public class Rules {
         return instance;
     }
 
-    public boolean isInCheck(Square[] board, int attackIndex){
-        boolean[] attackMoves = board[attackIndex].retrievePossibleMoves(board);
-        for(int i = 0; i < attackMoves.length; i++){
-            if(attackMoves[i] && board[i].getPiece() != null && board[i].getPiece().getPieceName() == PieceType.KING){
-                ((King) board[i].getPiece()).setInCheck(true);
-                indexKingInCheck = i;
+    // public boolean isInCheck(Square[] board, int attackIndex){
+    //     boolean[] attackMoves = board[attackIndex].retrievePossibleMoves(board);
+    //     for(int i = 0; i < attackMoves.length; i++){
+    //         if(attackMoves[i] && board[i].getPiece() != null && board[i].getPiece().getPieceName() == PieceType.KING){
+    //             ((King) board[i].getPiece()).setInCheck(true);
+    //             indexKingInCheck = i;
+    //             attackPiece = attackIndex;
+    //             inCheck = true;
+    //             return true;
+
+    //         }
+            
+    //     }
+    //     return false;
+    // }
+
+    public boolean isInCheck(Square[] board, int attackIndex, int kingIndex){
+        // King index isn't given, must find
+        if(kingIndex == -1){
+            // Here we need to find the king index of the opposite color 
+            kingIndex = findKingIndex(board, board[attackIndex].getPiece().getColor().matches("WHITE") ? "BLACK" : "WHITE");
+
+        }
+        
+        if(board[attackIndex].retrievePossibleMoves(board)[kingIndex]){
+                ((King) board[kingIndex].getPiece()).setInCheck(true);
+                indexKingInCheck = kingIndex;
                 attackPiece = attackIndex;
                 inCheck = true;
                 return true;
-
-            }
-            
         }
+
         return false;
+
     }
 
-    public boolean isInCheck(Square[] board, int attackIndex, int kingIndex){
-        return board[attackIndex].retrievePossibleMoves(board)[kingIndex];
-    }
 
-    public boolean canBlockCheck(Square[] board, int previousPieceSquare, int potentialBlockCheckSquare){
-        Piece temp = null;
-        if(board[potentialBlockCheckSquare].getPiece() != null){
-            temp = board[potentialBlockCheckSquare].getPiece();
+    public int findKingIndex(Square[] board, String color){
+        for(int i = 0; i < board.length; i++){
+            if(board[i].getPiece() != null){
+                if(board[i].getPiece().getPieceName() == PieceType.KING && board[i].getPiece().getColor().matches(color)){
+                    return i;
+                }
+            }
+
         }
-
-        // Make the potential move to see if it solves the check
-        board[potentialBlockCheckSquare].setPiece(board[previousPieceSquare].getPiece());
-
-        /*
-         * isInCheck returns true if the king is still in check.
-         * So, if isInCheck returns false then return true from this function
-         * indicating that the move can block the check
-         * 
-         */
-
-        boolean solvesCheck = !isInCheck(board, attackPiece, indexKingInCheck);
-
-        // Undo the move as this function doesn't deal with making moves
-        board[potentialBlockCheckSquare].setPiece(temp);
-        return solvesCheck;
-        
-    }
-
-    public void checkResolved(){
-        indexKingInCheck = -1;
-        inCheck = false;
-        colorPieceInCheck = null;
+        return -1;
     }
 
     // Function to determine if a move is made that puts its own king in danger
@@ -87,15 +86,9 @@ public class Rules {
 
         // Find the index of the king potentially under attack
         if(!kingSelected){
-            kingFind: for(int i = 0; i < board.length; i++){
-                if(board[i].getPiece() != null){
-                    if(board[i].getPiece().getPieceName() == PieceType.KING && board[i].getPiece().getColor().matches(color)){
-                        pinnedKing = i;
-                        break kingFind;
-                    }
-                }
+            // Here we need to find the king index on the same team as selected
+            pinnedKing = findKingIndex(board, selected.getPiece().getColor());
 
-            }
         } else{
             pinnedKing = Arrays.asList(board).indexOf(selected);
         }
@@ -106,8 +99,9 @@ public class Rules {
          * Then see if the selected piece has put its own king in danger
          * If so, make that move as a non-move 
          */
-
+        
         int selectedIdx = Arrays.asList(board).indexOf(selected);
+
         for(int move = 0; move < possibleMoves.length; move++){
             if(possibleMoves[move]){
                 Piece selectedOg = board[selectedIdx].getPiece();
@@ -124,14 +118,15 @@ public class Rules {
                                 if(isInCheck(board, square, move)){
                                     possibleMoves[move] = false;
                                 }     
+                            } else{
+                                // See if the temp move has put that selected piece king in danger
+                                if(isInCheck(board, square, pinnedKing)){
+                                    // Mark as unplayable move
+                                    possibleMoves[move] = false;
+                                }
                             }
 
 
-                            // See if the temp move has put that selected piece king in danger
-                            if(isInCheck(board, square, pinnedKing)){
-                                // Mark as unplayable move
-                                possibleMoves[move] = false;
-                            }
                         }
                     }
                 }
@@ -141,14 +136,19 @@ public class Rules {
                 board[selectedIdx].setPiece(selectedOg);
             }
         }
-
-        // System.out.println("IN CHECK: " + inCheck);
-
         return possibleMoves;
 
     }
 
+    public void checkResolved(){
+        indexKingInCheck = -1;
+        inCheck = false;
+        colorPieceInCheck = null;
+    }
+
     public boolean isCheckMate(Square[] board, int kingIndex){
+        
+
         return true;
     }
 

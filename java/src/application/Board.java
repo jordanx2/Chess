@@ -68,6 +68,10 @@ public class Board{
     }
 
     public void applyMove(int moveIndex, int previousIndex){
+        // if(Rules.getInstance().isInCheck()){
+        //     Rules.getInstance().checkResolved();
+        // }
+
         SpecialFlags flag1 = null;
 
         // Flag2 is for when there is a capture as well as a check for example
@@ -137,7 +141,7 @@ public class Board{
         moveCounter++;
         
         // Check to see if the move that is being made is a CHECK move
-        if(rules.isInCheck(squares, moveIndex)){
+        if(rules.isInCheck(squares, moveIndex, -1)){
             flag1 = SpecialFlags.CHECK;
         }
 
