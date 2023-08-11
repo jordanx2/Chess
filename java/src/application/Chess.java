@@ -8,7 +8,7 @@ public class Chess extends PApplet{
     Square[] boardSquares;
     Square selected;
     boolean whiteToMove;
-    boolean TESTING = true;
+    boolean TESTING = false;
     Rules rules;
 
 
@@ -107,12 +107,7 @@ public class Chess extends PApplet{
 
 
                             // See if there is a CHECK move made
-                            if(!rules.isInCheck()){
-                                renderPossibleMoves();
-                            }else{
-                                board.renderPossibleCheckSolutions(selected);
-                            }
-
+                            renderPossibleMoves();
                             return true;
                         } 
 

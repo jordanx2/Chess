@@ -32,9 +32,6 @@ public abstract class Piece {
 
     public abstract boolean[] possibleMoves(Square[] board, Square square);
 
-    public abstract boolean[] blockCheck(Square[] board, Square square);
-    
-
     public float getSize() {
         return size;
     }

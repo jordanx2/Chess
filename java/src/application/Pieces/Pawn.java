@@ -73,37 +73,6 @@ public class Pawn extends Piece{
         return moves;
     }
 
-    @Override
-    public boolean[] blockCheck(Square[] board, Square square) {
-        boolean[] blocks = new boolean[64];
-        int idx = Arrays.asList(board).indexOf(square);
-        boolean[] possibleCheckBlocks = calculateMainPawnMovement(board, idx, getMoves());
-        
-        // Check to see if the pawn can capture the attacking piece
-        int[] attackOffsets = {8, -8}; // Offsets for right and left attacks
-
-        for (int offset : attackOffsets) {
-            int attackIndex = idx + step + offset;
-        
-            if (attackIndex >= 0 && attackIndex <= 63 && attackIndex == rules.attackPiece) {
-                blocks[attackIndex] = true;
-            }
-        }
-
-
-        for(int i = 0; i < possibleCheckBlocks.length; i++) {            
-            if(possibleCheckBlocks[i]){
-                if(rules.canBlockCheck(board, idx, i)){
-                    blocks[i] = true;
-
-                }
-            }   
-        }
-
-        return blocks;
-
-    }
-
     private boolean checkForEnpassant(Square[] board, int attackSquare, int index, int sameRankCheck){
         // Check if its a square where enpassant is true
         if(board[attackSquare].isEnpassantSquare()){

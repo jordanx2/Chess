@@ -75,38 +75,6 @@ public class King extends Piece{
         return false;
     }
 
-    public boolean[] solveCheck(Square[] board){
-        /*
-             * Firstly check can the king move to safety
-
-             * Secondly see if the king can capture the piece that is performing the check
-        */
-        
-        // Get the index of the king that is in check
-        int index = rules.indexKingInCheck;
-
-        // Will contain all of the simple moves that the king can make to get out of check
-        boolean[] safeMoves = new boolean[64];
-
-        // Call the local method to get all of the moves that the king can generally make
-        safeMoves = possibleMoves(board, board[index]);
-
-        // Filter out all of the moves that if the king makes will still make the king in check
-        for(int i = 0; i < safeMoves.length; i++){
-            // System.out.println("i: " + i + ", test: " + safeMoves[i]);
-            if(safeMoves[i]){
-                if(rules.isInCheck(board, rules.attackPiece, i)){
-                    safeMoves[i] = false;
-                    
-                }
-
-            }
-        }
-
-        return safeMoves;
-
-    }
-
     // Getters and Setters
     public boolean isKingMoved() {
         return kingMoved;
@@ -134,11 +102,6 @@ public class King extends Piece{
 
     public void setRules(Rules rules) {
         this.rules = rules;
-    }
-
-    @Override
-    public boolean[] blockCheck(Square[] board, Square square) {
-        throw new UnsupportedOperationException("Unimplemented method 'blockCheck'");
     }
     
 }

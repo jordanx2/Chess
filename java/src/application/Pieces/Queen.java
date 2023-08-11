@@ -17,22 +17,5 @@ public class Queen extends Piece {
         setMoves(getMovement().BishopMovement(board, index, getMoves()));
         return getMoves();
     }
-
-    @Override
-    public boolean[] blockCheck(Square[] board, Square square) {
-        boolean[] blockMoves = new boolean[64];
-        Arrays.fill(getMoves(), false);
-        int index = Arrays.asList(board).indexOf(square);
-
-        boolean[] moves = possibleMoves(board, square);
-        for(int i = 0; i < moves.length; i++ ){
-            if(moves[i]){
-                if(rules.canBlockCheck(board, index, i)){
-                    blockMoves[i] = true;
-                }
-            }
-        }
     
-        return blockMoves;
-    }
 }

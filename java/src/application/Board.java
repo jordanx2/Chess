@@ -151,21 +151,6 @@ public class Board{
         plotMoves();
     }
 
-    public void renderPossibleCheckSolutions(Square selected){
-        // If the king can escape check by making a king move
-        if(selected.getPiece().getPieceName() == PieceType.KING) {
-            potentialMoves = ((King) selected.getPiece()).solveCheck(squares);
-
-        } 
-        else{
-            // See if the king can block the check by moving another piece on the board
-            Arrays.fill(potentialMoves, false);
-            potentialMoves = selected.getPiece().blockCheck(squares, selected);    
-        }
-
-        plotMoves();
-    }
-
     private void plotMoves(){
         for(int i = 0; i < potentialMoves.length; i++){
             renderPotentialMoves(i);
