@@ -142,6 +142,9 @@ public class Board{
         
         // Check to see if the move that is being made is a CHECK move
         if(rules.isInCheck(squares, moveIndex, -1)){
+            if(rules.isCheckMate(squares, moveIndex)){
+                System.out.println("CHECK MATEEEE");
+            }
             flag1 = SpecialFlags.CHECK;
         }
 
@@ -234,7 +237,7 @@ public class Board{
                 p.fill(0);
 
                 //testing
-                // p.text(j + (i * 8), x + half, y + half);
+                p.text(j + (i * 8), x + half, y + half);
             }
         }
 

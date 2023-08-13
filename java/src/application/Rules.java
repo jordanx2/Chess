@@ -28,28 +28,11 @@ public class Rules {
         return instance;
     }
 
-    // public boolean isInCheck(Square[] board, int attackIndex){
-    //     boolean[] attackMoves = board[attackIndex].retrievePossibleMoves(board);
-    //     for(int i = 0; i < attackMoves.length; i++){
-    //         if(attackMoves[i] && board[i].getPiece() != null && board[i].getPiece().getPieceName() == PieceType.KING){
-    //             ((King) board[i].getPiece()).setInCheck(true);
-    //             indexKingInCheck = i;
-    //             attackPiece = attackIndex;
-    //             inCheck = true;
-    //             return true;
-
-    //         }
-            
-    //     }
-    //     return false;
-    // }
-
     public boolean isInCheck(Square[] board, int attackIndex, int kingIndex){
         // King index isn't given, must find
         if(kingIndex == -1){
             // Here we need to find the king index of the opposite color 
             kingIndex = findKingIndex(board, board[attackIndex].getPiece().getColor().matches("WHITE") ? "BLACK" : "WHITE");
-
         }
         
         if(board[attackIndex].retrievePossibleMoves(board)[kingIndex]){
@@ -125,8 +108,6 @@ public class Rules {
                                     possibleMoves[move] = false;
                                 }
                             }
-
-
                         }
                     }
                 }
@@ -146,8 +127,22 @@ public class Rules {
         colorPieceInCheck = null;
     }
 
-    public boolean isCheckMate(Square[] board, int kingIndex){
+    public boolean isCheckMate(Square[] board, int moveIdx){
+        String teamCheckMateColor = board[moveIdx].getPiece().getColor().matches("WHITE") ? "BLACK" : "WHITE";
         
+         for(int i = 0; i < board.length; i++){
+            if(board[i].getPiece() != null){
+                if(board[i].getPiece().getColor().matches(teamCheckMateColor)){
+                    boolean[] safeMoves = parseSafeMoves(board, board[i], board[i].getPiece().possibleMoves(board, board[i]));
+                    for(int j = 0; j < safeMoves.length; j++){
+                        if(safeMoves[j]){   
+                            return false;
+                        }
+                    }
+                }
+            }
+         }
+         
 
         return true;
     }
