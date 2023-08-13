@@ -10,6 +10,7 @@ public class Chess extends PApplet{
     boolean whiteToMove;
     boolean TESTING = false;
     Rules rules;
+    int moveCounter;
 
 
     public void settings() {
@@ -26,6 +27,7 @@ public class Chess extends PApplet{
         boardSquares = board.getSquares();
         whiteToMove = true;
         rules = Rules.getInstance();
+        moveCounter = 1;
     }
 
     public void mouseReleased(){
@@ -52,7 +54,7 @@ public class Chess extends PApplet{
          * If the move counter is even then it is blacks turn
          * Otherwise if its odd then it is whites turn
          */
-        return whiteToMove && !(board.getMoveCounter() % 2 == 0);
+        return whiteToMove && !(moveCounter % 2 == 0);
     }
 
     public void changeTurns(){ whiteToMove = !whiteToMove; }
@@ -73,6 +75,7 @@ public class Chess extends PApplet{
                     }
 
                     board.applyMove(i, Arrays.asList(boardSquares).indexOf(selected));
+                    moveCounter++;
                     selected.setPiece(null);
                     board.setSquares(boardSquares);
                     removeSelected();

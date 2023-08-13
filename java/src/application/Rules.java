@@ -10,6 +10,7 @@ public class Rules {
     public String colorPieceInCheck;
     public int attackPiece;
     private boolean inCheck;
+    private boolean isCheckMate;
 
     // Singleton
     private Rules(){ 
@@ -18,6 +19,7 @@ public class Rules {
         attackPiece = -1;
         inCheck = false;
         colorPieceInCheck = null;
+        isCheckMate = false;
     }
     
     public static Rules getInstance(){
@@ -46,7 +48,6 @@ public class Rules {
         return false;
 
     }
-
 
     public int findKingIndex(Square[] board, String color){
         for(int i = 0; i < board.length; i++){
@@ -143,6 +144,7 @@ public class Rules {
             }
          }
          
+        isCheckMate = true;
 
         return true;
     }
@@ -155,4 +157,14 @@ public class Rules {
         this.inCheck = inCheck;
     }
 
+    public boolean isCheckMate() {
+        return isCheckMate;
+    }
+
+    public void setCheckMate(boolean isCheckMate) {
+        this.isCheckMate = isCheckMate;
+    }
+
 }
+
+

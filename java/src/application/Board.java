@@ -16,14 +16,15 @@ public class Board{
     private boolean whiteStart;
     private float half;
     private ArrayList<String> movesMade;
-    private String whitesMove;
-    private String blacksMove;
-    private int moveCounter;
     private int moveCounterLog;
     Square lastEnpassantSquare;
     int enpassantStep = 0;
     String movex;
     Rules rules;
+
+    int buffSize = 2;
+    String[] buffer;
+    int pointer = 0;
     
 
     public Board(PApplet p, boolean whiteStart){
@@ -34,13 +35,13 @@ public class Board{
         this.squareW = (p.width / 8) * scale;
         this.half = squareW / 2;
         this.movesMade = new ArrayList<>();
-        this.moveCounter = 1;
         this.moveCounterLog = 1;
         movex = String.valueOf(moveCounterLog + ". ");
         lastEnpassantSquare = null;
         rules = Rules.getInstance();
-    
 
+        buffer = new String[buffSize];
+        buffer[0] = String.valueOf(moveCounterLog);
         
         for(int i = 0; i < 8; i++){
             for(int j = 0; j < 8; j++){
@@ -68,10 +69,6 @@ public class Board{
     }
 
     public void applyMove(int moveIndex, int previousIndex){
-        // if(Rules.getInstance().isInCheck()){
-        //     Rules.getInstance().checkResolved();
-        // }
-
         SpecialFlags flag1 = null;
 
         // Flag2 is for when there is a capture as well as a check for example
@@ -138,18 +135,19 @@ public class Board{
 
 
         squares[moveIndex].setPiece(p);
-        moveCounter++;
         
         // Check to see if the move that is being made is a CHECK move
         if(rules.isInCheck(squares, moveIndex, -1)){
             if(rules.isCheckMate(squares, moveIndex)){
-                System.out.println("CHECK MATEEEE");
+                flag1 = SpecialFlags.CHECK_MATE;
+            } else{
+                System.out.println("test2");
+                flag1 = SpecialFlags.CHECK;
             }
-            flag1 = SpecialFlags.CHECK;
         }
 
         registerMove(previousIndex, moveIndex, flag1, flag2, true);
-
+        
     }
 
 
@@ -313,6 +311,11 @@ public class Board{
                     break;
 
                 case CHECK_MATE:
+                    if(flag2 == SpecialFlags.CAPTURE){
+                        movex = prevPieceName.charAt(0) + "x" + moveSquareName + "#";
+                    } else{
+                        movex = prevPieceName.charAt(0) + moveSquareName + "#";
+                    }
                     break;
             }
 
@@ -325,24 +328,30 @@ public class Board{
                 movex = prevPieceName + moveSquareName;
             }
             
+        } 
+
+        if(pointer != 0 && (pointer % buffSize) == 0){
+            movesMade.add(String.valueOf(moveCounterLog) + buffer[0] + " " + buffer[1]);
+            moveCounterLog++;
+            buffer[0] = null;
+            buffer[1] = null;
         }
 
-        if(whitesMove == null){
-            whitesMove = movex;
-        }
-        
-        else if(blacksMove == null){
-            blacksMove = movex;
-            String moveList = moveCounterLog + ".) " + whitesMove + " " + blacksMove;
-            // print movelist
-            // System.out.println(moveList);
-            movesMade.add(moveList);
-            whitesMove = null;
-            blacksMove = null;
-            moveCounterLog++;
-        }
+        buffer[pointer % buffSize] = movex;
+        pointer++;
+
+        printBuffer();
 
     }
+
+    public void printBuffer(){
+        System.out.print("\n" + moveCounterLog + ". ");
+        for(String move : buffer){
+            if(move != null){
+                System.out.print(move + " ");
+            }
+        }
+    } 
 
     private Piece calculatePiece(Square s){
         if(s == null) return null;
@@ -446,18 +455,6 @@ public class Board{
 
     public void setMovesMade(ArrayList<String> movesMade) {
         this.movesMade = movesMade;
-    }
-
-    public int getMoveCounter() {
-        return moveCounter;
-    }
-
-    public void setMoveCounter(int moveCounter) {
-        this.moveCounter = moveCounter;
-    }
-
-    
-    
-
+    }    
     
 }
