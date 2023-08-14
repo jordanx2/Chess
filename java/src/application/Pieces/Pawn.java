@@ -24,6 +24,10 @@ public class Pawn extends Piece{
 
         moves = calculateMainPawnMovement(board, index, moves);
 
+        if(pawnPromotion(index)){
+            System.out.println("PROMOTE: " + index);
+        }
+
         // Calculate attack moves
         int rightAttack = (index + step) + 8;
         int leftAttack = (index + step) - 8;
@@ -92,14 +96,14 @@ public class Pawn extends Piece{
     }
 
     
-    // private String pawnPromotion(int index){
-    //     // Promotion
-    //     if(getMovement().isFirstOrLastColumn(index)){
-    //         return "PROMOTE";
-    //     }
+    private boolean pawnPromotion(int index){
+        // Promotion
+        if(getMovement().isFirstOrLastColumn(index)){
+            return true;
+        }
 
-    //     return null;
-    // }
+        return false;
+    }
 
     public boolean checkEnpassant(){
         return true;
