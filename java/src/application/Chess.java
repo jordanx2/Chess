@@ -1,7 +1,12 @@
 package application;
 
 import processing.core.PApplet;
+import processing.core.PImage;
+
 import java.util.Arrays;
+
+import application.Pieces.Pawn;
+import application.Pieces.PieceType;
 
 public class Chess extends PApplet{
     Board board;
@@ -11,6 +16,9 @@ public class Chess extends PApplet{
     boolean TESTING = false;
     Rules rules;
     int moveCounter;
+    boolean pawnPromotionOptions = false;
+    int promotionBoxX = 0;
+    int promotionBoxY = 0;
 
 
     public void settings() {
@@ -31,9 +39,43 @@ public class Chess extends PApplet{
     }
 
     public void mouseReleased(){
-        checkIfPieceSelected();
-        board.renderBoard();
-        boardSquares = board.getSquares();
+        if(!pawnPromotionOptions){
+            checkIfPieceSelected();
+            board.renderBoard();
+            boardSquares = board.getSquares();
+        }
+
+        if(pawnPromotionOptions){
+            displayPawnPromotion();
+        }
+
+    }
+
+    boolean promotionDisplayed = false;
+    public void displayPawnPromotion(){
+        float boxW = board.getSquareW();
+        
+        if(!promotionDisplayed){
+            PieceType[] types = new PieceType[]{PieceType.QUEEN, PieceType.KNIGHT, PieceType.ROOK, PieceType.BISHOP};
+            String[] displayImages = new String[]{
+                ChessSymbols.WHITE_CHESS_QUEEN_IMG, 
+                ChessSymbols.WHITE_CHESS_KNIGHT_IMG, 
+                ChessSymbols.WHITE_CHESS_ROOK_IMG,
+                ChessSymbols.WHITE_CHESS_BISHOP_IMG
+            };
+
+            fill(255);
+            stroke(0);
+
+            PImage p;
+            for(int i = 0; i < types.length; i++){
+                square(promotionBoxX, promotionBoxY + (i * boxW), boxW);
+                p = loadImage(displayImages[i]);
+                image(p, promotionBoxX, promotionBoxY + (i * boxW), boxW, boxW);
+            }
+
+        }
+
     }
 
     public boolean isValidSelection(String color){
@@ -70,11 +112,23 @@ public class Chess extends PApplet{
             boolean[] potentialMoves = board.getPotentialMoves();
             for(int i = 0; i < potentialMoves.length; i++){
                 if(checkBounds(boardSquares[i].getX(), boardSquares[i].getY()) && potentialMoves[i]){
+                    int selectedIndex = Arrays.asList(boardSquares).indexOf(selected);
                     if(Rules.getInstance().isInCheck()){
                         Rules.getInstance().checkResolved();
                     }
 
-                    board.applyMove(i, Arrays.asList(boardSquares).indexOf(selected));
+                    try{
+                        if(((Pawn) boardSquares[selectedIndex].getPiece()).isPawnPromotion(i)){
+                            System.out.println("Promotion: " + i);
+                            pawnPromotionOptions = true;
+                            promotionBoxX = mouseX;
+                            promotionBoxY = mouseY;
+                            return false;
+                        }
+                    } catch(Exception e){}
+        
+
+                    board.applyMove(i, selectedIndex);
                     moveCounter++;
                     selected.setPiece(null);
                     board.setSquares(boardSquares);
@@ -156,7 +210,5 @@ public class Chess extends PApplet{
     }
 
 
-    public void draw() {
-
-    }
+    public void draw() {}
 }
