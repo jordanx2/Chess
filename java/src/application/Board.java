@@ -159,6 +159,56 @@ public class Board{
         }
     }
 
+    public void registerPawnPromotion(PieceType promotion, int previousSquare, int promotionSquare){
+        Piece promotionPiece = null;
+        String symbol;
+        String pieceImg;
+        String color = squares[previousSquare].getPiece().getColor();
+
+        switch(promotion){
+            case BISHOP:
+                symbol = color.matches("WHITE") ? ChessSymbols.WHITE_CHESS_BISHOP : ChessSymbols.BLACK_CHESS_BISHOP;
+                pieceImg = color.matches("WHITE") ? ChessSymbols.WHITE_CHESS_BISHOP_IMG : ChessSymbols.BLACK_CHESS_BISHOP_IMG;
+                promotionPiece = new Bishop(promotion, symbol, color, pieceImg);
+                break;
+            case KNIGHT:
+                symbol = color.matches("WHITE") ? ChessSymbols.WHITE_CHESS_KNIGHT : ChessSymbols.BLACK_CHESS_KNIGHT;
+                pieceImg = color.matches("WHITE") ? ChessSymbols.WHITE_CHESS_KNIGHT_IMG : ChessSymbols.BLACK_CHESS_KNIGHT_IMG;
+                promotionPiece = new Knight(promotion, symbol, color, pieceImg);
+                break;
+            case QUEEN:
+                symbol = color.matches("WHITE") ? ChessSymbols.WHITE_CHESS_QUEEN : ChessSymbols.BLACK_CHESS_QUEEN;
+                pieceImg = color.matches("WHITE") ? ChessSymbols.WHITE_CHESS_QUEEN_IMG : ChessSymbols.BLACK_CHESS_QUEEN_IMG;
+                promotionPiece = new Queen(promotion, symbol, color, pieceImg);
+                break;
+            case ROOK:
+                symbol = color.matches("WHITE") ? ChessSymbols.WHITE_CHESS_ROOK : ChessSymbols.BLACK_CHESS_ROOK;
+                pieceImg = color.matches("WHITE") ? ChessSymbols.WHITE_CHESS_ROOK_IMG : ChessSymbols.BLACK_CHESS_ROOK_IMG;
+                promotionPiece = new Rook(promotion, symbol, color, pieceImg);
+                break;
+            default:
+                break;
+
+        }
+
+        squares[previousSquare].setPiece(null);
+        squares[promotionSquare].setPiece(promotionPiece);
+        pointer++;
+
+        // SpecialFlags flag1;
+        // SpecialFlags flag2;
+        // // Check to see if the move that is being made is a CHECK move
+        // if(rules.isInCheck(squares, promotionSquare, -1)){
+        //     if(rules.isCheckMate(squares, promotionSquare)){
+        //         flag1 = SpecialFlags.CHECK_MATE;
+        //     } else{
+        //         flag1 = SpecialFlags.CHECK;
+        //     }
+        // }
+
+        // registerMove(previousSquare, promotionSquare, flag1, flag2, true);
+    }
+
 
     // RENDERING FUNCTIONS
     public void renderPotentialMoves(int index){
@@ -365,41 +415,41 @@ public class Board{
             return new King(PieceType.KING, ChessSymbols.WHITE_CHESS_KING, "WHITE", ChessSymbols.WHITE_CHESS_KING_IMG);
         }
 
-        if(squareName.equals("D1")){
-            return new Queen(PieceType.QUEEN, ChessSymbols.WHITE_CHESS_QUEEN, "WHITE", ChessSymbols.WHITE_CHESS_QUEEN_IMG);
-        }
+        // if(squareName.equals("D1")){
+        //     return new Queen(PieceType.QUEEN, ChessSymbols.WHITE_CHESS_QUEEN, "WHITE", ChessSymbols.WHITE_CHESS_QUEEN_IMG);
+        // }
 
-        if((squareName.equals("C1")) || squareName.equals("F1")){
-            return new Bishop(PieceType.BISHOP, ChessSymbols.WHITE_CHESS_BISHOP, "WHITE", ChessSymbols.WHITE_CHESS_BISHOP_IMG);
-        }
+        // if((squareName.equals("C1")) || squareName.equals("F1")){
+        //     return new Bishop(PieceType.BISHOP, ChessSymbols.WHITE_CHESS_BISHOP, "WHITE", ChessSymbols.WHITE_CHESS_BISHOP_IMG);
+        // }
 
-        if(squareName.equals("B1") || squareName.equals("G1")){
-            return new Knight(PieceType.KNIGHT, ChessSymbols.WHITE_CHESS_KNIGHT, "WHITE", ChessSymbols.WHITE_CHESS_KNIGHT_IMG);
-        }
+        // if(squareName.equals("B1") || squareName.equals("G1")){
+        //     return new Knight(PieceType.KNIGHT, ChessSymbols.WHITE_CHESS_KNIGHT, "WHITE", ChessSymbols.WHITE_CHESS_KNIGHT_IMG);
+        // }
 
-        if(squareName.equals("A1") || squareName.equals("H1")){
-            return new Rook(PieceType.ROOK, ChessSymbols.WHITE_CHESS_ROOK, "WHITE", ChessSymbols.WHITE_CHESS_ROOK_IMG);
-        }
+        // if(squareName.equals("A1") || squareName.equals("H1")){
+        //     return new Rook(PieceType.ROOK, ChessSymbols.WHITE_CHESS_ROOK, "WHITE", ChessSymbols.WHITE_CHESS_ROOK_IMG);
+        // }
 
         if(squareName.equals("E8")){
             return new King(PieceType.KING, ChessSymbols.BLACK_CHESS_KING, "BLACK", ChessSymbols.BLACK_CHESS_KING_IMG);
         }
 
-        if(squareName.equals("D8")){
-            return new Queen(PieceType.QUEEN, ChessSymbols.BLACK_CHESS_QUEEN, "BLACK", ChessSymbols.BLACK_CHESS_QUEEN_IMG);
-        }
+        // if(squareName.equals("D8")){
+        //     return new Queen(PieceType.QUEEN, ChessSymbols.BLACK_CHESS_QUEEN, "BLACK", ChessSymbols.BLACK_CHESS_QUEEN_IMG);
+        // }
 
-        if(squareName.equals("C8") || squareName.equals("F8")){
-            return new Bishop(PieceType.BISHOP, ChessSymbols.BLACK_CHESS_BISHOP, "BLACK", ChessSymbols.BLACK_CHESS_BISHOP_IMG);
-        }
+        // if(squareName.equals("C8") || squareName.equals("F8")){
+        //     return new Bishop(PieceType.BISHOP, ChessSymbols.BLACK_CHESS_BISHOP, "BLACK", ChessSymbols.BLACK_CHESS_BISHOP_IMG);
+        // }
 
-        if(squareName.equals("B8") ||squareName.equals("G8")){
-            return new Knight(PieceType.KNIGHT, ChessSymbols.BLACK_CHESS_KNIGHT, "BLACK", ChessSymbols.BLACK_CHESS_KNIGHT_IMG);
-        }
+        // if(squareName.equals("B8") ||squareName.equals("G8")){
+        //     return new Knight(PieceType.KNIGHT, ChessSymbols.BLACK_CHESS_KNIGHT, "BLACK", ChessSymbols.BLACK_CHESS_KNIGHT_IMG);
+        // }
 
-        if(squareName.equals("A8") || squareName.equals("H8")){
-            return new Rook(PieceType.ROOK, ChessSymbols.BLACK_CHESS_ROOK, "BLACK", ChessSymbols.BLACK_CHESS_ROOK_IMG);
-        }
+        // if(squareName.equals("A8") || squareName.equals("H8")){
+        //     return new Rook(PieceType.ROOK, ChessSymbols.BLACK_CHESS_ROOK, "BLACK", ChessSymbols.BLACK_CHESS_ROOK_IMG);
+        // }
         
         return null;
     }
