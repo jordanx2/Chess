@@ -45,14 +45,9 @@ public class PromotionBlock {
 
     static boolean promotionAchieved;
 
-    private PromotionBlock(){
-        this.displayImages = new String[]{
-            ChessSymbols.WHITE_CHESS_QUEEN_IMG, 
-            ChessSymbols.WHITE_CHESS_KNIGHT_IMG, 
-            ChessSymbols.WHITE_CHESS_ROOK_IMG,
-            ChessSymbols.WHITE_CHESS_BISHOP_IMG
-        };  
+    static String pieceTeam;
 
+    private PromotionBlock(){
         this.types = new PieceType[]{PieceType.QUEEN, PieceType.KNIGHT, PieceType.ROOK, PieceType.BISHOP};
 
         promotionDisplayed = false;
@@ -67,7 +62,26 @@ public class PromotionBlock {
         this.newPromoteSquare = -1;
         pawnPromotionPiece = null;
         promotionAchieved = false;
+        pieceTeam = null;
 
+    }
+
+    public void setDisplayImages(){
+        if(pieceTeam.matches("WHITE")){
+            this.displayImages = new String[]{
+                ChessSymbols.WHITE_CHESS_QUEEN_IMG, 
+                ChessSymbols.WHITE_CHESS_KNIGHT_IMG, 
+                ChessSymbols.WHITE_CHESS_ROOK_IMG,
+                ChessSymbols.WHITE_CHESS_BISHOP_IMG
+            };  
+        } else{
+            this.displayImages = new String[]{
+                ChessSymbols.BLACK_CHESS_QUEEN_IMG, 
+                ChessSymbols.BLACK_CHESS_KNIGHT_IMG, 
+                ChessSymbols.BLACK_CHESS_ROOK_IMG,
+                ChessSymbols.BLACK_CHESS_BISHOP_IMG
+            };  
+        }
     }
 
     public static PromotionBlock getInstance(){
@@ -84,28 +98,27 @@ public class PromotionBlock {
         Piece promotionPiece = null;
         String symbol;
         String pieceImg;
-        String color = board[previousSquare].getPiece().getColor();
 
         switch(promotion){
             case BISHOP:
-                symbol = color.matches("WHITE") ? ChessSymbols.WHITE_CHESS_BISHOP : ChessSymbols.BLACK_CHESS_BISHOP;
-                pieceImg = color.matches("WHITE") ? ChessSymbols.WHITE_CHESS_BISHOP_IMG : ChessSymbols.BLACK_CHESS_BISHOP_IMG;
-                promotionPiece = new Bishop(promotion, symbol, color, pieceImg);
+                symbol = pieceTeam.matches("WHITE") ? ChessSymbols.WHITE_CHESS_BISHOP : ChessSymbols.BLACK_CHESS_BISHOP;
+                pieceImg = pieceTeam.matches("WHITE") ? ChessSymbols.WHITE_CHESS_BISHOP_IMG : ChessSymbols.BLACK_CHESS_BISHOP_IMG;
+                promotionPiece = new Bishop(promotion, symbol, pieceTeam, pieceImg);
                 break;
             case KNIGHT:
-                symbol = color.matches("WHITE") ? ChessSymbols.WHITE_CHESS_KNIGHT : ChessSymbols.BLACK_CHESS_KNIGHT;
-                pieceImg = color.matches("WHITE") ? ChessSymbols.WHITE_CHESS_KNIGHT_IMG : ChessSymbols.BLACK_CHESS_KNIGHT_IMG;
-                promotionPiece = new Knight(promotion, symbol, color, pieceImg);
+                symbol = pieceTeam.matches("WHITE") ? ChessSymbols.WHITE_CHESS_KNIGHT : ChessSymbols.BLACK_CHESS_KNIGHT;
+                pieceImg = pieceTeam.matches("WHITE") ? ChessSymbols.WHITE_CHESS_KNIGHT_IMG : ChessSymbols.BLACK_CHESS_KNIGHT_IMG;
+                promotionPiece = new Knight(promotion, symbol, pieceTeam, pieceImg);
                 break;
             case QUEEN:
-                symbol = color.matches("WHITE") ? ChessSymbols.WHITE_CHESS_QUEEN : ChessSymbols.BLACK_CHESS_QUEEN;
-                pieceImg = color.matches("WHITE") ? ChessSymbols.WHITE_CHESS_QUEEN_IMG : ChessSymbols.BLACK_CHESS_QUEEN_IMG;
-                promotionPiece = new Queen(promotion, symbol, color, pieceImg);
+                symbol = pieceTeam.matches("WHITE") ? ChessSymbols.WHITE_CHESS_QUEEN : ChessSymbols.BLACK_CHESS_QUEEN;
+                pieceImg = pieceTeam.matches("WHITE") ? ChessSymbols.WHITE_CHESS_QUEEN_IMG : ChessSymbols.BLACK_CHESS_QUEEN_IMG;
+                promotionPiece = new Queen(promotion, symbol, pieceTeam, pieceImg);
                 break;
             case ROOK:
-                symbol = color.matches("WHITE") ? ChessSymbols.WHITE_CHESS_ROOK : ChessSymbols.BLACK_CHESS_ROOK;
-                pieceImg = color.matches("WHITE") ? ChessSymbols.WHITE_CHESS_ROOK_IMG : ChessSymbols.BLACK_CHESS_ROOK_IMG;
-                promotionPiece = new Rook(promotion, symbol, color, pieceImg);
+                symbol = pieceTeam.matches("WHITE") ? ChessSymbols.WHITE_CHESS_ROOK : ChessSymbols.BLACK_CHESS_ROOK;
+                pieceImg = pieceTeam.matches("WHITE") ? ChessSymbols.WHITE_CHESS_ROOK_IMG : ChessSymbols.BLACK_CHESS_ROOK_IMG;
+                promotionPiece = new Rook(promotion, symbol, pieceTeam, pieceImg);
                 break;
             default:
                 break;
@@ -132,5 +145,14 @@ public class PromotionBlock {
     }
 
     public void applyPromotion(Board board){ board.applyMove(newPromoteSquare, prevPromoteSquare);}
+
+    public float verticleIncrement(int i, float boxW){
+        if(pieceTeam.matches("WHITE")){
+            return blockSpawnY + (i * boxW);
+
+        }
+        
+        return blockSpawnY - (i * boxW);
+    }
 
 }

@@ -40,6 +40,7 @@ public class Chess extends PApplet{
             board.renderBoard();
         }
         boardSquares = board.getSquares();  
+        System.out.println("MOVE: " + whiteToMove);
     }
 
     public void displayPawnPromotion(){
@@ -52,7 +53,8 @@ public class Chess extends PApplet{
             PImage p;
             for(int i = 0; i < promotionBlock.types.length; i++){
                 float x = promotionBlock.blockSpawnX;
-                float y = promotionBlock.blockSpawnY + (i * boxW);
+                float y = promotionBlock.verticleIncrement(i, boxW);
+
                 promotionBlock.promotionSquares[i].promotionBoxX = x;
                 promotionBlock.promotionSquares[i].promotionBoxY = y;
 

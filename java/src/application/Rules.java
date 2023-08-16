@@ -33,6 +33,10 @@ public class Rules {
     public boolean isInCheck(Square[] board, int attackIndex, int kingIndex){
         // King index isn't given, must find
         if(kingIndex == -1){
+            if(board[attackIndex].getPiece() == null){
+                return false;
+            }
+
             // Here we need to find the king index of the opposite color 
             kingIndex = findKingIndex(board, board[attackIndex].getPiece().getColor().matches("WHITE") ? "BLACK" : "WHITE");
         }

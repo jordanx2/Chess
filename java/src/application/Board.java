@@ -69,6 +69,7 @@ public class Board{
     }
 
     public void applyMove(int moveIndex, int previousIndex){
+        System.out.println("testing: " + moveIndex);
         SpecialFlags flag1 = null;
 
         // Flag2 is for when there is a capture as well as a check for example
@@ -107,6 +108,8 @@ public class Board{
                 promotionBlock.blockSpawnY = this.p.mouseY;
                 promotionBlock.prevPromoteSquare = previousIndex;
                 promotionBlock.newPromoteSquare = moveIndex;
+                PromotionBlock.pieceTeam = p.getColor();
+                promotionBlock.setDisplayImages();
                 /*
                     Returns in order to display the promotion block
                     i.e., allow the player to select a promotion piece
@@ -157,7 +160,7 @@ public class Board{
 
         squares[previousIndex].setPiece(null);
         squares[moveIndex].setPiece(p);
-        
+
         // Check to see if the move that is being made is a CHECK move
         if(rules.isInCheck(squares, moveIndex, -1)){
             if(rules.isCheckMate(squares, moveIndex)){
@@ -166,7 +169,6 @@ public class Board{
                 flag1 = SpecialFlags.CHECK;
             }
         }
-
         registerMove(previousIndex, moveIndex, flag1, flag2, true);
         
     }
@@ -254,7 +256,7 @@ public class Board{
                 p.fill(0);
 
                 //testing
-                // p.text(j + (i * 8), x + half, y + half);
+                p.text(j + (i * 8), x + half, y + half);
             }
         }
 
