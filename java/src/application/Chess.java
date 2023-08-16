@@ -40,7 +40,6 @@ public class Chess extends PApplet{
             board.renderBoard();
         }
         boardSquares = board.getSquares();  
-        System.out.println("MOVE: " + whiteToMove);
     }
 
     public void displayPawnPromotion(){
@@ -71,6 +70,7 @@ public class Chess extends PApplet{
         else{
             if(checkPromotionSelected()){
                 promotionBlock.applyPromotion(board);
+                removeSelected();
                 changeTurns();
             } else{
                 promotionBlock.reset();
@@ -168,7 +168,7 @@ public class Chess extends PApplet{
                         }
 
 
-                        if(isValidSelection(s.getPiece().getColor()) || TESTING){
+                        if(isValidSelection(s.getPiece().getColor())){
                             selected = s;
                             selected.setSelected(true);
                             s.setColor(color(255, 255, 120));

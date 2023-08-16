@@ -69,7 +69,6 @@ public class Board{
     }
 
     public void applyMove(int moveIndex, int previousIndex){
-        System.out.println("testing: " + moveIndex);
         SpecialFlags flag1 = null;
 
         // Flag2 is for when there is a capture as well as a check for example
@@ -256,7 +255,7 @@ public class Board{
                 p.fill(0);
 
                 //testing
-                p.text(j + (i * 8), x + half, y + half);
+                // p.text(j + (i * 8), x + half, y + half);
             }
         }
 
