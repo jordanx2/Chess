@@ -11,6 +11,7 @@ public class Square {
     private float y;
     private boolean isSelected;
     private boolean enpassantSquare;
+    private boolean promotionSquare;
 
     public Square(String id, int color, float x, float y, Piece piece) {
         this.id = id;
@@ -21,6 +22,7 @@ public class Square {
         this.piece = piece;
         this.isSelected = false;
         this.enpassantSquare = false;
+        this.promotionSquare = false;
     }
 
     public boolean[] retrievePossibleMoves(Square[] squares){
@@ -90,6 +92,14 @@ public class Square {
 
     public void setEnpassantSquare(boolean enpassantSquare) {
         this.enpassantSquare = enpassantSquare;
+    }
+
+    public boolean isPromotionSquare() {
+        return promotionSquare;
+    }
+
+    public void setPromotionSquare(boolean promotionSquare) {
+        this.promotionSquare = promotionSquare;
     }
 
 }

@@ -2,71 +2,7 @@ package application;
 
 import processing.core.PApplet;
 import processing.core.PImage;
-
 import java.util.Arrays;
-
-import application.Pieces.Pawn;
-import application.Pieces.PieceType;
-
-class PromotionBlock{
-    class PromotionSquare{
-        float promotionBoxX;
-        float promotionBoxY;
-
-        public PromotionSquare(){
-            this.promotionBoxX = 0;
-            this.promotionBoxY = 0;
-        }
-
-    } // End inner class
-
-    float boxW;
-    PieceType[] types;
-    String[] displayImages;
-    boolean promotionDisplayed;
-    boolean pawnPromotionOptions;
-    private static PromotionBlock promotionInstance;
-    PromotionSquare[] promotionSquares;
-    float blockSpawnX;
-    float blockSpawnY;
-    int prevPromoteSquare;
-    int newPromoteSquare;
-
-    private PromotionBlock(float boxW){
-        this.displayImages = new String[]{
-            ChessSymbols.WHITE_CHESS_QUEEN_IMG, 
-            ChessSymbols.WHITE_CHESS_KNIGHT_IMG, 
-            ChessSymbols.WHITE_CHESS_ROOK_IMG,
-            ChessSymbols.WHITE_CHESS_BISHOP_IMG
-        };  
-
-        this.types = new PieceType[]{PieceType.QUEEN, PieceType.KNIGHT, PieceType.ROOK, PieceType.BISHOP};
-        this.boxW = boxW;
-
-        this.promotionDisplayed = false;
-        this.pawnPromotionOptions = false;
-        this.promotionSquares = new PromotionSquare[4];
-        for(int i = 0; i < promotionSquares.length; i++){
-            promotionSquares[i] = new PromotionSquare();
-        }
-        this.blockSpawnX = 0;
-        this.blockSpawnY = 0;
-        this.prevPromoteSquare = -1;
-        this.newPromoteSquare = -1;
-
-    }
-
-    public static PromotionBlock getInstance(float boxW){
-        if(promotionInstance == null){
-            promotionInstance = new PromotionBlock(boxW);
-        }
-
-        return promotionInstance;
-    }
-
-    public void promotionCompleted(){ promotionInstance = new PromotionBlock(boxW);}
-
-}
 
 public class Chess extends PApplet{
     Board board;
@@ -93,30 +29,26 @@ public class Chess extends PApplet{
         whiteToMove = true;
         rules = Rules.getInstance();
         moveCounter = 1;
-        promotionBlock = PromotionBlock.getInstance(board.getSquareW());
+        promotionBlock = PromotionBlock.getInstance();
     }
 
     public void mouseReleased(){
-        if(!promotionBlock.pawnPromotionOptions){
-            checkIfPieceSelected();
-            board.renderBoard();
-            boardSquares = board.getSquares();
-        }
-
-        if(promotionBlock.pawnPromotionOptions){
+        checkIfPieceSelected();
+        if(PromotionBlock.pawnPromotionOptions){
             displayPawnPromotion();
+        } else{
+            board.renderBoard();
         }
-
+        boardSquares = board.getSquares();  
     }
 
     public void displayPawnPromotion(){
-        float boxW = promotionBlock.boxW;
-
+        float boxW = board.getSquareW();
         // Display the promotion block
-        if(!promotionBlock.promotionDisplayed){
+        if(!PromotionBlock.promotionDisplayed){
             fill(255);
             stroke(0);
-
+            
             PImage p;
             for(int i = 0; i < promotionBlock.types.length; i++){
                 float x = promotionBlock.blockSpawnX;
@@ -129,21 +61,19 @@ public class Chess extends PApplet{
                 image(p, x, y, boxW, boxW);
             }
 
-            promotionBlock.promotionDisplayed = true;
+            PromotionBlock.promotionDisplayed = true;
 
         }
 
         // Check to see if a promotion square has been selected
         else{
             if(checkPromotionSelected()){
-                // Reset everything
-                promotionBlock.promotionCompleted();
-                board.renderBoard();
-                promotionBlock = PromotionBlock.getInstance(boxW);
-                moveCounter++;
-                System.out.println("COMPLETED");
-
+                promotionBlock.applyPromotion(board);
+                changeTurns();
+            } else{
+                promotionBlock.reset();
             }
+            board.renderBoard();
         }
     }
 
@@ -152,19 +82,15 @@ public class Chess extends PApplet{
             float x = promotionBlock.promotionSquares[i].promotionBoxX;
             float y = promotionBlock.promotionSquares[i].promotionBoxY;
 
-
             if(checkBounds(x, y)){
-                board.registerPawnPromotion(promotionBlock.types[i], promotionBlock.prevPromoteSquare, promotionBlock.newPromoteSquare);
-                System.out.println("REGISTERING THE PROMOTION");
+                PromotionBlock.registerPawnPromotion(promotionBlock.types[i], promotionBlock.prevPromoteSquare, promotionBlock.newPromoteSquare, boardSquares);
                 return true;
 
-            }
+            } 
         }
 
         return false;
     }
-
-
 
     public boolean isValidSelection(String color){
         boolean isWhiteToMove = isWhitesTurn();
@@ -187,7 +113,10 @@ public class Chess extends PApplet{
         return whiteToMove && !(moveCounter % 2 == 0);
     }
 
-    public void changeTurns(){ whiteToMove = !whiteToMove; }
+    public void changeTurns(){ 
+        moveCounter++;
+        whiteToMove = !whiteToMove; 
+    }
 
     public void renderPossibleMoves(){
         if(checkSelected()){
@@ -196,7 +125,7 @@ public class Chess extends PApplet{
     }
 
     public boolean isMoveMade(){
-        if(checkSelected()){    
+        if(checkSelected() && !PromotionBlock.pawnPromotionOptions){    
             boolean[] potentialMoves = board.getPotentialMoves();
             for(int i = 0; i < potentialMoves.length; i++){
                 if(checkBounds(boardSquares[i].getX(), boardSquares[i].getY()) && potentialMoves[i]){
@@ -205,25 +134,14 @@ public class Chess extends PApplet{
                         Rules.getInstance().checkResolved();
                     }
 
-                    try{
-                        if(((Pawn) boardSquares[selectedIndex].getPiece()).isPawnPromotion(i)){
-                            System.out.println("Promotion: " + i);
-                            promotionBlock.pawnPromotionOptions = true;
-                            promotionBlock.blockSpawnX = mouseX;
-                            promotionBlock.blockSpawnY = mouseY;
-                            promotionBlock.prevPromoteSquare = selectedIndex;
-                            promotionBlock.newPromoteSquare = i;
-                            return false;
-                        }
-                    } catch(Exception e){}
-        
-
                     board.applyMove(i, selectedIndex);
-                    moveCounter++;
-                    selected.setPiece(null);
-                    board.setSquares(boardSquares);
-                    removeSelected();
-                    changeTurns();
+                    if(!PromotionBlock.pawnPromotionOptions){
+                        board.setSquares(boardSquares);
+                        removeSelected();
+                        changeTurns();
+
+                    }
+                    
                     return true;
 
                 }
@@ -231,6 +149,7 @@ public class Chess extends PApplet{
         }
         return false;
     }
+
 
     public boolean checkIfPieceSelected(){
         if(isMoveMade()){

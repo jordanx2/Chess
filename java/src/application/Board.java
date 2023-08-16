@@ -24,6 +24,7 @@ public class Board{
     int buffSize = 2;
     String[] buffer;
     int pointer = 0;
+    PromotionBlock promotionBlock = PromotionBlock.getInstance();
     
 
     public Board(PApplet p, boolean whiteStart){
@@ -100,7 +101,29 @@ public class Board{
                 lastEnpassantSquare.setEnpassantSquare(true);
             }
 
-            ((Pawn) p).setStartingPos(false);
+            if(((Pawn) p).isPawnPromotion(moveIndex) && !PromotionBlock.pawnPromotionOptions){
+                PromotionBlock.pawnPromotionOptions = true;
+                promotionBlock.blockSpawnX = this.p.mouseX;
+                promotionBlock.blockSpawnY = this.p.mouseY;
+                promotionBlock.prevPromoteSquare = previousIndex;
+                promotionBlock.newPromoteSquare = moveIndex;
+                /*
+                    Returns in order to display the promotion block
+                    i.e., allow the player to select a promotion piece
+                */ 
+                return;
+            }
+
+            if(PromotionBlock.promotionAchieved){
+                flag2 = SpecialFlags.PROMOTION;
+                p = PromotionBlock.pawnPromotionPiece;
+                promotionBlock.reset();
+            }
+
+            if(p instanceof Pawn){
+                ((Pawn) p).setStartingPos(false);
+            }
+
 
         }
 
@@ -132,7 +155,7 @@ public class Board{
 
         }
 
-
+        squares[previousIndex].setPiece(null);
         squares[moveIndex].setPiece(p);
         
         // Check to see if the move that is being made is a CHECK move
@@ -158,57 +181,6 @@ public class Board{
             renderPotentialMoves(i);
         }
     }
-
-    public void registerPawnPromotion(PieceType promotion, int previousSquare, int promotionSquare){
-        Piece promotionPiece = null;
-        String symbol;
-        String pieceImg;
-        String color = squares[previousSquare].getPiece().getColor();
-
-        switch(promotion){
-            case BISHOP:
-                symbol = color.matches("WHITE") ? ChessSymbols.WHITE_CHESS_BISHOP : ChessSymbols.BLACK_CHESS_BISHOP;
-                pieceImg = color.matches("WHITE") ? ChessSymbols.WHITE_CHESS_BISHOP_IMG : ChessSymbols.BLACK_CHESS_BISHOP_IMG;
-                promotionPiece = new Bishop(promotion, symbol, color, pieceImg);
-                break;
-            case KNIGHT:
-                symbol = color.matches("WHITE") ? ChessSymbols.WHITE_CHESS_KNIGHT : ChessSymbols.BLACK_CHESS_KNIGHT;
-                pieceImg = color.matches("WHITE") ? ChessSymbols.WHITE_CHESS_KNIGHT_IMG : ChessSymbols.BLACK_CHESS_KNIGHT_IMG;
-                promotionPiece = new Knight(promotion, symbol, color, pieceImg);
-                break;
-            case QUEEN:
-                symbol = color.matches("WHITE") ? ChessSymbols.WHITE_CHESS_QUEEN : ChessSymbols.BLACK_CHESS_QUEEN;
-                pieceImg = color.matches("WHITE") ? ChessSymbols.WHITE_CHESS_QUEEN_IMG : ChessSymbols.BLACK_CHESS_QUEEN_IMG;
-                promotionPiece = new Queen(promotion, symbol, color, pieceImg);
-                break;
-            case ROOK:
-                symbol = color.matches("WHITE") ? ChessSymbols.WHITE_CHESS_ROOK : ChessSymbols.BLACK_CHESS_ROOK;
-                pieceImg = color.matches("WHITE") ? ChessSymbols.WHITE_CHESS_ROOK_IMG : ChessSymbols.BLACK_CHESS_ROOK_IMG;
-                promotionPiece = new Rook(promotion, symbol, color, pieceImg);
-                break;
-            default:
-                break;
-
-        }
-
-        squares[previousSquare].setPiece(null);
-        squares[promotionSquare].setPiece(promotionPiece);
-        pointer++;
-
-        // SpecialFlags flag1;
-        // SpecialFlags flag2;
-        // // Check to see if the move that is being made is a CHECK move
-        // if(rules.isInCheck(squares, promotionSquare, -1)){
-        //     if(rules.isCheckMate(squares, promotionSquare)){
-        //         flag1 = SpecialFlags.CHECK_MATE;
-        //     } else{
-        //         flag1 = SpecialFlags.CHECK;
-        //     }
-        // }
-
-        // registerMove(previousSquare, promotionSquare, flag1, flag2, true);
-    }
-
 
     // RENDERING FUNCTIONS
     public void renderPotentialMoves(int index){
@@ -282,7 +254,7 @@ public class Board{
                 p.fill(0);
 
                 //testing
-                p.text(j + (i * 8), x + half, y + half);
+                // p.text(j + (i * 8), x + half, y + half);
             }
         }
 
