@@ -6,21 +6,11 @@ import application.Square;
 import application.Rules;
 
 public class King extends Piece{
-
     private boolean kingMoved;
-    private boolean inCheck;
-    private boolean inCheckMate;
-
-
-    public void setInCheckMate(boolean inCheckMate) {
-        this.inCheckMate = inCheckMate;
-    }
 
     public King(PieceType pieceName, String pieceUnicode, String color, String imgPath) {
         super(pieceName, pieceUnicode, color, imgPath);
         this.kingMoved = false;
-        this.inCheck = false;
-        this.inCheckMate = false;
     }
 
     @Override
@@ -44,36 +34,20 @@ public class King extends Piece{
             }
         }
 
-        if(checkKingSideCastling(board, index)){
-            getMoves()[index + 16] = true;
-        }
+        if(!kingMoved){
+            if(board[index + 8].getPiece() == null && board[index + 16].getPiece() == null){
+                getMoves()[index + 16] = true;    
 
-        if(checkQueenSideCastling(board, index)){
-            getMoves()[index - 16] = true;
+            }
+
+            if(board[index - 8].getPiece() == null && board[index - 16].getPiece() == null){
+                getMoves()[index - 16] = true;    
+                
+            }
         }
 
         return getMoves();
     }  
-    
-    public boolean checkKingSideCastling(Square[] board, int index){
-        // Check if the king has moved from its original square 
-        if(!isKingMoved()){
-            if(board[index + 8].getPiece() == null && board[index + 16].getPiece() == null){
-                return true;
-            }
-        }
-        return false;
-    }
-
-    public boolean checkQueenSideCastling(Square[] board, int index){
-        // Check if the king has moved from its original square 
-        if(!isKingMoved()){
-            if(board[index - 8].getPiece() == null && board[index - 16].getPiece() == null){
-                return true;
-            }
-        }
-        return false;
-    }
 
     // Getters and Setters
     public boolean isKingMoved() {
@@ -82,18 +56,6 @@ public class King extends Piece{
 
     public void setKingMoved(boolean kingMoved) {
         this.kingMoved = kingMoved;
-    }
-
-    public boolean isInCheck() {
-        return inCheck;
-    }
-
-    public void setInCheck(boolean inCheck) {
-        this.inCheck = inCheck;
-    }
-
-    public boolean isInCheckMate() {
-        return inCheckMate;
     }
 
     public Rules getRules() {

@@ -40,9 +40,8 @@ public class Rules {
             // Here we need to find the king index of the opposite color 
             kingIndex = findKingIndex(board, board[attackIndex].getPiece().getColor().matches("WHITE") ? "BLACK" : "WHITE");
         }
-        
+
         if(board[attackIndex].retrievePossibleMoves(board)[kingIndex]){
-                ((King) board[kingIndex].getPiece()).setInCheck(true);
                 indexKingInCheck = kingIndex;
                 attackPiece = attackIndex;
                 inCheck = true;
@@ -122,8 +121,67 @@ public class Rules {
                 board[selectedIdx].setPiece(selectedOg);
             }
         }
+
+        if(kingSelected){
+            if(checkKingSideCastling(board, selectedIdx, possibleMoves)){
+                possibleMoves[selectedIdx + 16] = true;
+            }
+
+            if(checkQueenSideCastling(board, selectedIdx, possibleMoves)){
+                possibleMoves[selectedIdx - 16] = true;
+            }
+        }
+
         return possibleMoves;
 
+    }
+
+    public boolean checkKingSideCastling(Square[] board, int index, boolean[] moves){
+        // Check if the king has moved from its original square 
+        King king = ((King) board[index].getPiece());
+
+        if(!king.isKingMoved()){
+            int nextColumn = 8;
+            int kingSideRook = index + (nextColumn * 3);
+
+            // Check the see if the king side rook is on its home square
+            if(board[kingSideRook].getPiece() != null && board[kingSideRook].getPiece() instanceof Rook){
+                // See if the rook hasn't moved yet
+                if(!((Rook) board[kingSideRook].getPiece()).isHasRookMoved()){
+                    if(moves[index + nextColumn] && moves[index + (nextColumn * 2)]){
+                        return true;
+                    }
+                }
+            } 
+            moves[index + (nextColumn * 2)] = false;
+        }
+
+
+        return false;
+    }
+
+    public boolean checkQueenSideCastling(Square[] board, int index, boolean[] moves){
+        // Check if the king has moved from its original square 
+        King king = ((King) board[index].getPiece());
+
+        if(!king.isKingMoved()){
+            int nextColumn = 8;
+            int queenSideRook = index - (nextColumn * 4);
+
+            // Check the see if the king side rook is on its home square
+            if(board[queenSideRook].getPiece() != null && board[queenSideRook].getPiece() instanceof Rook){
+                // See if the rook hasn't moved yet
+                if(!((Rook) board[queenSideRook].getPiece()).isHasRookMoved()){
+                    if(moves[index - nextColumn] && moves[index - (nextColumn * 2)]){
+                        return true;
+                    }
+                }
+            } 
+            moves[index - (nextColumn * 2)] = false;
+        }
+
+
+        return false;
     }
 
     public void checkResolved(){

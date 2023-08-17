@@ -157,6 +157,10 @@ public class Board{
 
         }
 
+        if(p instanceof Rook && !((Rook) p).isHasRookMoved()){
+            ((Rook) p).setHasRookMoved(true);
+        }
+
         squares[previousIndex].setPiece(null);
         squares[moveIndex].setPiece(p);
 
@@ -388,41 +392,41 @@ public class Board{
             return new King(PieceType.KING, ChessSymbols.WHITE_CHESS_KING, "WHITE", ChessSymbols.WHITE_CHESS_KING_IMG);
         }
 
-        // if(squareName.equals("D1")){
-        //     return new Queen(PieceType.QUEEN, ChessSymbols.WHITE_CHESS_QUEEN, "WHITE", ChessSymbols.WHITE_CHESS_QUEEN_IMG);
-        // }
+        if(squareName.equals("D1")){
+            return new Queen(PieceType.QUEEN, ChessSymbols.WHITE_CHESS_QUEEN, "WHITE", ChessSymbols.WHITE_CHESS_QUEEN_IMG);
+        }
 
-        // if((squareName.equals("C1")) || squareName.equals("F1")){
-        //     return new Bishop(PieceType.BISHOP, ChessSymbols.WHITE_CHESS_BISHOP, "WHITE", ChessSymbols.WHITE_CHESS_BISHOP_IMG);
-        // }
+        if((squareName.equals("C1")) || squareName.equals("F1")){
+            return new Bishop(PieceType.BISHOP, ChessSymbols.WHITE_CHESS_BISHOP, "WHITE", ChessSymbols.WHITE_CHESS_BISHOP_IMG);
+        }
 
-        // if(squareName.equals("B1") || squareName.equals("G1")){
-        //     return new Knight(PieceType.KNIGHT, ChessSymbols.WHITE_CHESS_KNIGHT, "WHITE", ChessSymbols.WHITE_CHESS_KNIGHT_IMG);
-        // }
+        if(squareName.equals("B1") || squareName.equals("G1")){
+            return new Knight(PieceType.KNIGHT, ChessSymbols.WHITE_CHESS_KNIGHT, "WHITE", ChessSymbols.WHITE_CHESS_KNIGHT_IMG);
+        }
 
-        // if(squareName.equals("A1") || squareName.equals("H1")){
-        //     return new Rook(PieceType.ROOK, ChessSymbols.WHITE_CHESS_ROOK, "WHITE", ChessSymbols.WHITE_CHESS_ROOK_IMG);
-        // }
+        if(squareName.equals("A1") || squareName.equals("H1")){
+            return new Rook(PieceType.ROOK, ChessSymbols.WHITE_CHESS_ROOK, "WHITE", ChessSymbols.WHITE_CHESS_ROOK_IMG);
+        }
 
         if(squareName.equals("E8")){
             return new King(PieceType.KING, ChessSymbols.BLACK_CHESS_KING, "BLACK", ChessSymbols.BLACK_CHESS_KING_IMG);
         }
 
-        // if(squareName.equals("D8")){
-        //     return new Queen(PieceType.QUEEN, ChessSymbols.BLACK_CHESS_QUEEN, "BLACK", ChessSymbols.BLACK_CHESS_QUEEN_IMG);
-        // }
+        if(squareName.equals("D8")){
+            return new Queen(PieceType.QUEEN, ChessSymbols.BLACK_CHESS_QUEEN, "BLACK", ChessSymbols.BLACK_CHESS_QUEEN_IMG);
+        }
 
-        // if(squareName.equals("C8") || squareName.equals("F8")){
-        //     return new Bishop(PieceType.BISHOP, ChessSymbols.BLACK_CHESS_BISHOP, "BLACK", ChessSymbols.BLACK_CHESS_BISHOP_IMG);
-        // }
+        if(squareName.equals("C8") || squareName.equals("F8")){
+            return new Bishop(PieceType.BISHOP, ChessSymbols.BLACK_CHESS_BISHOP, "BLACK", ChessSymbols.BLACK_CHESS_BISHOP_IMG);
+        }
 
-        // if(squareName.equals("B8") ||squareName.equals("G8")){
-        //     return new Knight(PieceType.KNIGHT, ChessSymbols.BLACK_CHESS_KNIGHT, "BLACK", ChessSymbols.BLACK_CHESS_KNIGHT_IMG);
-        // }
+        if(squareName.equals("B8") ||squareName.equals("G8")){
+            return new Knight(PieceType.KNIGHT, ChessSymbols.BLACK_CHESS_KNIGHT, "BLACK", ChessSymbols.BLACK_CHESS_KNIGHT_IMG);
+        }
 
-        // if(squareName.equals("A8") || squareName.equals("H8")){
-        //     return new Rook(PieceType.ROOK, ChessSymbols.BLACK_CHESS_ROOK, "BLACK", ChessSymbols.BLACK_CHESS_ROOK_IMG);
-        // }
+        if(squareName.equals("A8") || squareName.equals("H8")){
+            return new Rook(PieceType.ROOK, ChessSymbols.BLACK_CHESS_ROOK, "BLACK", ChessSymbols.BLACK_CHESS_ROOK_IMG);
+        }
         
         return null;
     }

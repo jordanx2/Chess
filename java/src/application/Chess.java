@@ -172,9 +172,6 @@ public class Chess extends PApplet{
                             selected = s;
                             selected.setSelected(true);
                             s.setColor(color(255, 255, 120));
-
-
-                            // See if there is a CHECK move made
                             renderPossibleMoves();
                             return true;
                         } 
@@ -206,7 +203,7 @@ public class Chess extends PApplet{
             selected.setSelected(false);
             selected = null;
         }
-        
+
         Arrays.fill(board.getPotentialMoves(), false);
     }
 
