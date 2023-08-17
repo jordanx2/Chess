@@ -202,8 +202,11 @@ public class Chess extends PApplet{
             s.setColor(s.getOriginalColor());
         }
         
-        selected.setSelected(false);
-        selected = null;
+        if(selected != null){
+            selected.setSelected(false);
+            selected = null;
+        }
+        
         Arrays.fill(board.getPotentialMoves(), false);
     }
 
