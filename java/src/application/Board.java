@@ -168,6 +168,7 @@ public class Board{
         if(rules.isInCheck(squares, moveIndex, -1)){
             if(rules.isCheckMate(squares, moveIndex)){
                 flag1 = SpecialFlags.CHECK_MATE;
+                System.out.println("CHECKMATE");
             } else{
                 flag1 = SpecialFlags.CHECK;
             }
