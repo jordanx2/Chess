@@ -168,7 +168,7 @@ public class Chess extends PApplet{
                         }
 
 
-                        if(isValidSelection(s.getPiece().getColor())){
+                        if(isValidSelection(s.getPiece().getColor()) || TESTING){
                             selected = s;
                             selected.setSelected(true);
                             s.setColor(color(255, 255, 120));
