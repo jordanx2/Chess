@@ -29,9 +29,10 @@ public class Board{
 
     public Board(PApplet p, boolean whiteStart){
         this.p = p;
-        this.border = 55f;
+        this.border = 90f;
         this.whiteStart = whiteStart;
-        float scale = 0.87f;
+        float scale = 0.72f;
+
         this.squareW = (p.width / 8) * scale;
         this.half = squareW / 2;
         this.movesMade = new ArrayList<>();
@@ -60,6 +61,7 @@ public class Board{
                 Piece calcPiece = calculatePiece(squares[j + (i * 8)]);
 
                 if(calcPiece != null){
+                    calcPiece.setSize(squareW);
                     squares[j + (i * 8)].setPiece(calcPiece);
                 }
                 
@@ -210,29 +212,6 @@ public class Board{
         return (char)(u + 64);
     }
 
-    private void renderNumbering(int i, float x){
-        p.fill(255);
-        // bottom letters
-        p.text(toChar(i + 1), x + 35, p.height - 20);
-
-        // top letters
-        p.text(toChar(i + 1), x + 35, 40);
-
-        if(whiteStart){
-            //left numbering
-            p.text(8 - i, 20, x + 50);
-
-            // right numbering
-            p.text(8 - i, p.width - 30, x + 50);
-        } else{
-            //left numbering
-            p.text(i + 1, 20, x + 50);
-
-            // right numbering
-            p.text(i + 1, p.width - 30, x + 50);
-        }
-    }
-
     private void renderPieces(){
         for(Square s : squares){
             Piece eachPiece = s.getPiece();
@@ -248,7 +227,6 @@ public class Board{
         for(int i = 0; i < 8; i++){
             p.stroke(255);
             float x = i * squareW + border;
-            renderNumbering(i, x);
 
             p.noStroke();
             for(int j = 0; j < 8; j++){
@@ -264,7 +242,24 @@ public class Board{
             }
         }
 
+        renderNumbering2();
+
         renderPieces();
+    }
+    
+    private void renderNumbering2(){
+        p.textSize(12);
+
+        float bottomLetteringY = squareW * 8 + (border - 2);
+        for(int i = 0; i < 8; i++){
+            float x = i * squareW + border + 2;
+            p.text(String.valueOf(toChar(i + 1)).toLowerCase(), x, bottomLetteringY);
+        }
+
+        float leftNumberingX = squareW * 7 + border + squareW - 10;
+        for(int i = 0; i < 8; i++){
+            p.text(i + 1, leftNumberingX, bottomLetteringY - (squareW * i) - squareW + 15);
+        }
     }
 
     private void registerMove(int prevSquare, int newSquare, SpecialFlags flag, SpecialFlags flag2,  boolean whiteToMove){
@@ -480,5 +475,13 @@ public class Board{
     public void setMovesMade(ArrayList<String> movesMade) {
         this.movesMade = movesMade;
     }    
+
+    public boolean isWhiteStart() {
+        return whiteStart;
+    }
+
+    public void setWhiteStart(boolean whiteStart) {
+        this.whiteStart = whiteStart;
+    }
     
 }

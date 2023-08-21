@@ -20,7 +20,7 @@ public abstract class Piece {
         this.pieceUnicode = pieceUnicode;
         this.color = color;
         this.imgPath = imgPath;
-        this.size = 85;
+        // this.size = 85;
         this.moves = new boolean[64];
 
         // With black pawns we increment, with white pawns we decrement

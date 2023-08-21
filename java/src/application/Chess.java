@@ -15,7 +15,7 @@ public class Chess extends PApplet{
     PromotionBlock promotionBlock;
     
     public void settings() {
-        size(800, 800);        
+        size(1000, 900);             
     }
 
     public void setup() {
