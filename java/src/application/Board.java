@@ -64,8 +64,7 @@ public class Board{
                 if(calcPiece != null){
                     calcPiece.setSize(squareW);
                     squares[j + (i * 8)].setPiece(calcPiece);
-                }
-                
+                }  
 
             }
         }
@@ -249,7 +248,7 @@ public class Board{
 
         renderPieces();
 
-        captureGrid.drawCaptureSections();
+        captureGrid.drawCaptureSections(squares);
 
     }
     

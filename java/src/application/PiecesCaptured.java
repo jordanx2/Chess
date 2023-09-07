@@ -46,39 +46,55 @@ public class PiecesCaptured {
         return instance;
     }
 
-    public void drawCaptureSections(){
+    public void drawCaptureSections(Square[] board){
         p.stroke(255);
         p.rect(boardLeftCorner, boardLeftCorner, squareW * numSquares, -sectionHeight);
         p.rect(boardLeftCorner, boardLeftCorner * (numSquares + 1), squareW * numSquares, sectionHeight);
         p.noStroke();
 
-        renderPiecesCapture();
+        renderPiecesCapture(board);
     }
 
-    private void renderPiecesCapture(){
+    private void renderPiecesCapture(Square[] board){
         float whiteStartY = boardLeftCorner - sectionHeight;
         float blackStartY = boardLeftCorner * (numSquares + 1);
 
         if(blackPiecesCaptured[0] == null && whitePiecesCaptured[0] == null) return;
 
         if(blackPiecesCaptured[0] != null){
-            blackLastImgX = renderPieces(blackPiecesCaptured, blackStartY);
-            blackScore = determineScore(blackPiecesCaptured);
+            whiteLastImgX = renderPieces(blackPiecesCaptured, blackStartY);
         }
         
         if(whitePiecesCaptured[0] != null){
-            whiteLastImgX = renderPieces(whitePiecesCaptured, whiteStartY);
-            whiteScore = determineScore(whitePiecesCaptured);
+            blackLastImgX = renderPieces(whitePiecesCaptured, whiteStartY);
         }
 
+        determineScore(board);
         if(whiteScore > blackScore){
-            p.text("+" + (whiteScore - blackScore), whiteLastImgX + 25, boardLeftCorner - 5);
+            p.text("+" + (whiteScore - blackScore), whiteLastImgX + sectionHeight,  blackStartY + sectionHeight - 5);
         } 
         
         else if(blackScore > whiteScore){
-            p.text("+" + (blackScore - whiteScore), blackLastImgX + 25, blackStartY + sectionHeight - 5);
+            p.text("+" + (blackScore - whiteScore), blackLastImgX + sectionHeight, boardLeftCorner - 5);
         }
         
+    }
+
+    public void determineScore(Square[] board){
+        p.fill(255);
+        whiteScore = 0;
+        blackScore = 0;
+        for(Square s : board){
+            Piece p = s.getPiece();
+            if(p != null){
+                int score = determinePieceScore(p);
+                if(p.getColor().matches("WHITE")){
+                    whiteScore += score;
+                } else{
+                    blackScore += score;
+                }
+            }
+        }    
     }
 
     private float renderPieces(Piece[] pieces, float startinPosY){
@@ -116,6 +132,8 @@ public class PiecesCaptured {
     }
 
     private int determinePieceScore(Piece p){
+        if(p instanceof King) return 0;
+
         Map<Class<? extends Piece>, Integer> scoreMap = Map.of(
             Queen.class, 9,
             Rook.class, 5,
@@ -127,19 +145,19 @@ public class PiecesCaptured {
         return scoreMap.get(p.getClass());
     }
 
-    private int determineScore(Piece[] pieces){
-        p.fill(255);
-        int score = 0;
-        for(Piece piece : pieces){
-            if(piece == null){
-                return score; 
-            }
+    // private int determineScore(Piece[] pieces){
+    //     p.fill(255);
+    //     int score = 0;
+    //     for(Piece piece : pieces){
+    //         if(piece == null){
+    //             return score; 
+    //         }
 
-            score += determinePieceScore(piece);
-        }
+    //         score += determinePieceScore(piece);
+    //     }
         
-        return score;
-    }
+    //     return score;
+    // }
 
     public void addPieceCaptured(Piece piece){
         if(piece.getColor().toLowerCase().matches("white")){
