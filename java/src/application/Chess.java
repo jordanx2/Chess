@@ -1,6 +1,7 @@
 package application;
 
 import processing.core.PApplet;
+import processing.core.PFont;
 import processing.core.PImage;
 import java.util.Arrays;
 
@@ -13,6 +14,8 @@ public class Chess extends PApplet{
     Rules rules;
     int moveCounter;
     PromotionBlock promotionBlock;
+    int boardSpawnX;
+    int boardSpawnY;
     
     public void settings() {
         size(1000, 900);             
@@ -23,6 +26,8 @@ public class Chess extends PApplet{
         stroke(0);
         noFill();
         textSize(24);
+        PFont font = createFont("Arial", 32);
+        textFont(font);
         board = new Board(this, true);
         board.renderBoard();
         boardSquares = board.getSquares();
@@ -40,6 +45,7 @@ public class Chess extends PApplet{
             board.renderBoard();
         }
         boardSquares = board.getSquares();  
+        // drawCaptureSections();
     }
 
     public void displayPawnPromotion(){
@@ -219,7 +225,6 @@ public class Chess extends PApplet{
 
         return false;
     }
-
 
     public void draw() {}
 }

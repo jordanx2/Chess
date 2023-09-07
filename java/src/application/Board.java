@@ -25,6 +25,7 @@ public class Board{
     String[] buffer;
     int pointer = 0;
     PromotionBlock promotionBlock = PromotionBlock.getInstance();
+    PiecesCaptured captureGrid;
     
 
     public Board(PApplet p, boolean whiteStart){
@@ -43,6 +44,7 @@ public class Board{
 
         buffer = new String[buffSize];
         buffer[0] = String.valueOf(moveCounterLog);
+        captureGrid = PiecesCaptured.getInstance(this, p);
         
         for(int i = 0; i < 8; i++){
             for(int j = 0; j < 8; j++){
@@ -91,9 +93,11 @@ public class Board{
         }
 
         // Check if a capture has been made
-        if(squares[moveIndex].getPiece() != null)
+        if(squares[moveIndex].getPiece() != null){
             flag1 = SpecialFlags.CAPTURE;
             flag2 = SpecialFlags.CAPTURE;
+            captureGrid.addPieceCaptured(squares[moveIndex].getPiece());
+        }
 
         if(p instanceof Pawn){
             // Check to see if the pawn moved two squares
@@ -242,12 +246,15 @@ public class Board{
             }
         }
 
-        renderNumbering2();
+        renderNumbering();
 
         renderPieces();
+
+        captureGrid.drawCaptureSections();
+
     }
     
-    private void renderNumbering2(){
+    private void renderNumbering(){
         p.textSize(12);
 
         float bottomLetteringY = squareW * 8 + (border - 2);
