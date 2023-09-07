@@ -49,7 +49,7 @@ public class PiecesCaptured {
     public void drawCaptureSections(Square[] board){
         p.stroke(255);
         p.rect(boardLeftCorner, boardLeftCorner, squareW * numSquares, -sectionHeight);
-        p.rect(boardLeftCorner, boardLeftCorner * (numSquares + 1), squareW * numSquares, sectionHeight);
+        p.rect(boardLeftCorner, boardLeftCorner + (squareW * numSquares), squareW * numSquares, sectionHeight);
         p.noStroke();
 
         renderPiecesCapture(board);
@@ -144,20 +144,6 @@ public class PiecesCaptured {
 
         return scoreMap.get(p.getClass());
     }
-
-    // private int determineScore(Piece[] pieces){
-    //     p.fill(255);
-    //     int score = 0;
-    //     for(Piece piece : pieces){
-    //         if(piece == null){
-    //             return score; 
-    //         }
-
-    //         score += determinePieceScore(piece);
-    //     }
-        
-    //     return score;
-    // }
 
     public void addPieceCaptured(Piece piece){
         if(piece.getColor().toLowerCase().matches("white")){
