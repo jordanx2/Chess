@@ -144,7 +144,10 @@ public class PromotionBlock {
         return false;
     }
 
-    public void applyPromotion(Board board){ board.applyMove(newPromoteSquare, prevPromoteSquare);}
+    public void applyPromotion(Board board){ 
+        pawnPromotionPiece.setSize(board.getSquareW());
+        board.applyMove(newPromoteSquare, prevPromoteSquare);
+    }
 
     public float verticleIncrement(int i, float boxW){
         if(pieceTeam.matches("WHITE")){

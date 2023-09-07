@@ -27,7 +27,6 @@ public class Board{
     PromotionBlock promotionBlock = PromotionBlock.getInstance();
     PiecesCaptured captureGrid;
     
-
     public Board(PApplet p, boolean whiteStart){
         this.p = p;
         this.border = 90f;

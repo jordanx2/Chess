@@ -21,7 +21,6 @@ public class PiecesCaptured {
     private float blackLastImgX;
     private float whiteLastImgX;
 
-
     private PiecesCaptured(Board board, PApplet p){
         int bufferSize = 24;
         this.boardLeftCorner = board.getBorder();

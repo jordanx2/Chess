@@ -45,11 +45,11 @@ public class Chess extends PApplet{
             board.renderBoard();
         }
         boardSquares = board.getSquares();  
-        // drawCaptureSections();
     }
 
     public void displayPawnPromotion(){
         float boxW = board.getSquareW();
+        
         // Display the promotion block
         if(!PromotionBlock.promotionDisplayed){
             fill(255);
