@@ -16,6 +16,8 @@ public class Chess extends PApplet{
     PromotionBlock promotionBlock;
     int boardSpawnX;
     int boardSpawnY;
+    PlayerTimer whiteTimer;
+    PlayerTimer blackTimer;
     
     public void settings() {
         size(1000, 900);             
@@ -35,6 +37,13 @@ public class Chess extends PApplet{
         rules = Rules.getInstance();
         moveCounter = 1;
         promotionBlock = PromotionBlock.getInstance();
+        
+        whiteTimer = new PlayerTimer(180, true);
+        blackTimer = new PlayerTimer(180, false);
+        whiteTimer.start();
+        blackTimer.start();
+        renderPlayersTimer();
+
     }
 
     public void mouseReleased(){
@@ -45,6 +54,7 @@ public class Chess extends PApplet{
             board.renderBoard();
         }
         boardSquares = board.getSquares();  
+        renderPlayersTimer();
     }
 
     public void displayPawnPromotion(){
@@ -124,6 +134,14 @@ public class Chess extends PApplet{
     public void changeTurns(){ 
         moveCounter++;
         whiteToMove = !whiteToMove; 
+
+        if(whiteToMove){
+            whiteTimer.resumeTime();
+            blackTimer.pauseTime();
+        } else{ 
+            blackTimer.resumeTime();
+            whiteTimer.pauseTime();
+        }
     }
 
     public void renderPossibleMoves(){
@@ -225,6 +243,15 @@ public class Chess extends PApplet{
 
         return false;
     }
+
+    public void renderPlayersTimer(){
+        stroke(255);
+        int w = 100;
+        rect(width - (w * 2), 200, w, w);
+        rect(width - (w * 2), height - 200, w, w);
+    }
+
+
 
     public void draw() {}
 }
