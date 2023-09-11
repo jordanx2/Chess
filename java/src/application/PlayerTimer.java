@@ -7,6 +7,7 @@ import processing.core.PApplet;
 public class PlayerTimer extends Thread{
     int timeRemaining;
     int currentTime;
+    int timeConstraint;
     LocalDateTime time;
     boolean running;
     boolean threadRunning;
@@ -19,6 +20,7 @@ public class PlayerTimer extends Thread{
     int boxHeight;
 
     public PlayerTimer(int timeConstraint, boolean running, PApplet p, Board board, float y){
+        this.timeConstraint = timeConstraint;
         this.timeRemaining = timeConstraint;
         this.time = LocalDateTime.now();
         this.running = running;
@@ -31,6 +33,8 @@ public class PlayerTimer extends Thread{
         this.y = y;
         this.boxWidth = 150;
         this.boxHeight = 100;
+        renderTextBox();
+        updatePlayersTime();
     }
 
     public void run(){
@@ -45,6 +49,10 @@ public class PlayerTimer extends Thread{
                 if(currentTime != timeRemaining){
                     updateTime = true;
                     currentTime = timeRemaining;
+                } else{
+                    if(timeRemaining != timeConstraint){
+                        updateTime = false;
+                    }
                 }
                 timeRemaining--;
             }
@@ -60,7 +68,7 @@ public class PlayerTimer extends Thread{
     }
 
     public synchronized String getTimeRemaining(){
-        return timeRemaining / 60 + ":" + timeRemaining % 60;
+        return currentTime / 60 + ":" + currentTime % 60;
     }
 
     public void renderTextBox(){
