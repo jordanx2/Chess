@@ -18,6 +18,7 @@ public class Chess extends PApplet{
     int boardSpawnY;
     PlayerTimer whiteTimer;
     PlayerTimer blackTimer;
+    UpdatePlayersTime updateTime;
     
     public void settings() {
         size(1000, 900);             
@@ -42,8 +43,7 @@ public class Chess extends PApplet{
         blackTimer = new PlayerTimer(180, false);
         whiteTimer.start();
         blackTimer.start();
-        renderPlayersTimer();
-
+        updateTime = new UpdatePlayersTime(this, board, blackTimer, whiteTimer);
     }
 
     public void mouseReleased(){
@@ -54,7 +54,6 @@ public class Chess extends PApplet{
             board.renderBoard();
         }
         boardSquares = board.getSquares();  
-        renderPlayersTimer();
     }
 
     public void displayPawnPromotion(){
@@ -79,6 +78,7 @@ public class Chess extends PApplet{
             }
 
             PromotionBlock.promotionDisplayed = true;
+            noFill();
 
         }
 
@@ -244,14 +244,19 @@ public class Chess extends PApplet{
         return false;
     }
 
-    public void renderPlayersTimer(){
-        stroke(255);
-        int w = 100;
-        rect(width - (w * 2), 200, w, w);
-        rect(width - (w * 2), height - 200, w, w);
+    public void renderPlayersTime(){
+        try{
+            Thread.sleep(500);
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+
+        updateTime.render();
+        
     }
 
 
-
-    public void draw() {}
+    public void draw() {
+        renderPlayersTime();
+    }
 }

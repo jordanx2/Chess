@@ -94,7 +94,8 @@ public class PiecesCaptured {
                     blackScore += score;
                 }
             }
-        }    
+        } 
+        p.noFill();   
     }
 
     private float renderPieces(Piece[] pieces, float startinPosY){

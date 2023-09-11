@@ -39,7 +39,7 @@ public class PlayerTimer extends Thread{
         this.running = true;
     }
 
-    public String getTimeRemaining(){
+    public synchronized String getTimeRemaining(){
         return timeRemaining / 60 + ":" + timeRemaining % 60;
     }
 

@@ -197,6 +197,7 @@ public class Board{
         if(potentialMoves[index] && squares[index].getPiece() == null){
             p.fill(100, 100, 100);
             p.circle(squares[index].getX() + half, squares[index].getY() + half, 25);
+            p.noFill();
         }
 
         if(potentialMoves[index] && squares[index].getPiece() != null){
