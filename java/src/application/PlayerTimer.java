@@ -2,19 +2,35 @@ package application;
 
 import java.time.LocalDateTime;
 
+import processing.core.PApplet;
+
 public class PlayerTimer extends Thread{
     int timeRemaining;
-    long previousTime;
+    int currentTime;
     LocalDateTime time;
     boolean running;
     boolean threadRunning;
+    boolean updateTime;
+    Board board;
+    PApplet p;
+    float x;
+    float y;
+    int boxWidth;
+    int boxHeight;
 
-    public PlayerTimer(int timeConstraint, boolean running){
+    public PlayerTimer(int timeConstraint, boolean running, PApplet p, Board board, float y){
         this.timeRemaining = timeConstraint;
         this.time = LocalDateTime.now();
-        this.previousTime = System.currentTimeMillis();
         this.running = running;
         this.threadRunning = true;
+        this.currentTime = timeRemaining;
+        this.updateTime = false;
+        this.board = board;
+        this.p = p;
+        this.x = board.getBorder() + (board.getSquareW() * 8) + 20;
+        this.y = y;
+        this.boxWidth = 150;
+        this.boxHeight = 100;
     }
 
     public void run(){
@@ -26,6 +42,10 @@ public class PlayerTimer extends Thread{
             }
 
             if(running){
+                if(currentTime != timeRemaining){
+                    updateTime = true;
+                    currentTime = timeRemaining;
+                }
                 timeRemaining--;
             }
         }
@@ -41,6 +61,26 @@ public class PlayerTimer extends Thread{
 
     public synchronized String getTimeRemaining(){
         return timeRemaining / 60 + ":" + timeRemaining % 60;
+    }
+
+    public void renderTextBox(){
+        // Draw the timer rectangles
+        p.stroke(255);
+        p.fill(0);
+        p.rect(x, y, boxWidth, boxHeight);
+    }
+
+    public void updatePlayersTime(){
+        p.textAlign(PApplet.CENTER, PApplet.CENTER); 
+        p.textSize(24); 
+        p.fill(255);
+        p.text(getTimeRemaining(), x, y, boxWidth, boxHeight);
+        p.textAlign(PApplet.LEFT, PApplet.BASELINE);
+    }
+
+    public void render(){
+        renderTextBox();
+        updatePlayersTime();
     }
 
 }
