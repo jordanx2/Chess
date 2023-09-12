@@ -26,6 +26,7 @@ public class Board{
     int pointer = 0;
     PromotionBlock promotionBlock = PromotionBlock.getInstance();
     PiecesCaptured captureGrid;
+    PlaySound playSound;
     
     public Board(PApplet p, boolean whiteStart){
         this.p = p;
@@ -44,6 +45,7 @@ public class Board{
         buffer = new String[buffSize];
         buffer[0] = String.valueOf(moveCounterLog);
         captureGrid = PiecesCaptured.getInstance(this, p);
+        playSound = new PlaySound(p);
         
         for(int i = 0; i < 8; i++){
             for(int j = 0; j < 8; j++){
@@ -178,6 +180,7 @@ public class Board{
             }
         }
         registerMove(previousIndex, moveIndex, flag1, flag2, true);
+        playSound.play(flag1);
         
     }
 
