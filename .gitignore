@@ -28,4 +28,4 @@ hs_err_pid*
 project_notes.txt
 
 # vscode folder
-.vscode
+*.vscode
