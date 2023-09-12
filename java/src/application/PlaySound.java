@@ -21,8 +21,6 @@ public class PlaySound {
 
     public void play(SpecialFlags flag){    
         soundURL = getURL(flag);
-        System.out.println(soundURL);
-        
         player = minim.loadFile(soundURL);
         player.play();
     }

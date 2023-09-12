@@ -7,39 +7,55 @@ public class Movement {
         for(int x = -1; x <= 1; x++){
             for(int y = -1; y <= 1; y++){
                 if(Math.abs(x) != Math.abs(y)){
-                    int idx = index + x + (y * 8);
+                    int idx = index + x + (y * 8);  
 
                     loop: while(checkBounds(idx)){
                         if(x != 0){
-                            if(isFirstOrLastColumn(idx)){
-                                if((idx + 1) % 8 == 0 || idx % 8 == 0){
-                                    if(!((index - idx) == 1) && !((idx - index) == 1)){
-                                        if(canAttackSquare(board, idx, index)){
-                                            moves[idx] = true;
-                                        }
-                                    }
+                            // Edge case 1
+                            if(isFirstOrLastColumn(idx) && isFirstOrLastColumn(index)){
+                                if(Math.abs(index - idx) == 7){
+                                    moves[idx] = true;
                                 }
-                         
+                                break loop;
+                            }
+
+                            // Edge case 2
+                            if(isFirstOrLastColumn(idx)){
+                                if(isSquareOccupied(board, idx)){
+                                    if(canAttackPiece(board, idx, index)){
+                                        moves[idx] = true;
+                                    }   
+                                } else{
+                                    moves[idx] = true;
+                                }
 
                                 break loop;
                             }
 
-                        } 
-
-                        if(board[idx].getPiece() != null){       
-                            if(board[index].getPiece().getColor() != board[idx].getPiece().getColor()){
+                            // Edge case 3
+                            if(isSquareOccupied(board, idx)){
+                                if(canAttackPiece(board, idx, index)){
+                                    moves[idx] = true;
+                                    break loop;
+                                }
+                            } else{
                                 moves[idx] = true;
                             }
-                            break loop;
-                        } else{
-                            moves[idx] = true;
-                        }
 
-                        if(x != 0){
                             idx += x;
-                        }
+
+                        } // End X
 
                         if(y != 0){
+                            if(isSquareOccupied(board, idx)){
+                                if(canAttackPiece(board, idx, index)){
+                                    moves[idx] = true;
+                                }
+                                break loop;
+
+                            } else{
+                                moves[idx] = true;
+                            }
                             idx += (y * 8);
                         }
     
@@ -50,18 +66,15 @@ public class Movement {
         }
 
         return moves;
+        
     }
 
-    public boolean canAttackSquare(Square[] board, int idx, int index){
-        if(board[idx].getPiece() != null){       
-            if(board[index].getPiece().getColor() != board[idx].getPiece().getColor()){
-                return true;
-            }
-        } else{
-            return true;
-        }
+    public boolean isSquareOccupied(Square[] board, int idx){   
+        return board[idx].getPiece() != null;
+    }
 
-        return false;
+    public boolean canAttackPiece(Square[] board, int idx, int index){
+        return board[index].getPiece().getColor() != board[idx].getPiece().getColor();
     }
 
     public boolean[] BishopMovement(Square[] board, int index, boolean[] moves) {
