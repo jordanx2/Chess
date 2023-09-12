@@ -39,7 +39,7 @@ public class Chess extends PApplet{
         moveCounter = 1;
         promotionBlock = PromotionBlock.getInstance();
 
-        int timeConstraint = 5;
+        int timeConstraint = 300;
         whiteTimer = new PlayerTimer(timeConstraint, true, this, board, board.getBorder() + (board.getSquareW() * 7));
         blackTimer = new PlayerTimer(timeConstraint, false, this, board, board.getBorder());
         whiteTimer.start();
@@ -47,14 +47,16 @@ public class Chess extends PApplet{
     }
 
     public void mouseReleased(){
-        checkIfPieceSelected();
-        if(PromotionBlock.pawnPromotionOptions){
-            displayPawnPromotion();
-        } else{
-            board.renderBoard();
-            renderPlayerTimes();
+        if(!rules.isGameOver(whiteTimer, blackTimer)){
+            checkIfPieceSelected();
+            if(PromotionBlock.pawnPromotionOptions){
+                displayPawnPromotion();
+            } else{
+                board.renderBoard();
+                renderPlayerTimes();
+            }
+            boardSquares = board.getSquares();  
         }
-        boardSquares = board.getSquares();  
     }
 
     public void displayPawnPromotion(){
@@ -246,28 +248,13 @@ public class Chess extends PApplet{
     }
 
     public void renderPlayerTimes(){
-        if(!isGameOver()){
-            if(whiteTimer.updateTime){
-                whiteTimer.render();
-            }
-            
-            if(blackTimer.updateTime){
-                blackTimer.render();
-            }
+        if(whiteTimer.updateTime){
+            whiteTimer.render();
         }
-    }
-
-    public boolean isGameOver(){
-        // Check for time out
-        if(whiteTimer.isThreadRunning() && blackTimer.isThreadRunning()){
-            if(whiteTimer.isTimeLimitReached() || blackTimer.isTimeLimitReached()){
-                whiteTimer.setThreadRunning(false);
-                blackTimer.setThreadRunning(false);
-                return true;
-            }
+        
+        if(blackTimer.updateTime){
+            blackTimer.render();
         }
-
-        return false;
     }
 
     public void draw() {

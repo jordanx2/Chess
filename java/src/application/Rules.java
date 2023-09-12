@@ -11,6 +11,8 @@ public class Rules {
     public int attackPiece;
     private boolean inCheck;
     private boolean isCheckMate;
+    private boolean isGameOver;
+    private SpecialFlags gameStatus;
 
     // Singleton
     private Rules(){ 
@@ -20,6 +22,8 @@ public class Rules {
         inCheck = false;
         colorPieceInCheck = null;
         isCheckMate = false;
+        isGameOver = false;
+        gameStatus = null;
     }
     
     public static Rules getInstance(){
@@ -211,6 +215,27 @@ public class Rules {
         return true;
     }
 
+    public boolean isGameOver(PlayerTimer whiteTimer, PlayerTimer blackTimer){
+        if(isGameOver) return true;
+
+        if(isCheckMate){
+            gameStatus = SpecialFlags.CHECK_MATE;
+            isGameOver = true;
+            return true;
+        }
+
+        // Check for time out
+        if(!whiteTimer.isThreadRunning() || !blackTimer.isThreadRunning()){
+            isGameOver = true;
+            gameStatus = SpecialFlags.TIME_OUT;
+            return true;
+        }
+
+    
+
+        return false;
+    }
+
     public boolean isInCheck() {
         return inCheck;
     }
@@ -225,6 +250,14 @@ public class Rules {
 
     public void setCheckMate(boolean isCheckMate) {
         this.isCheckMate = isCheckMate;
+    }
+
+    public SpecialFlags getGameStatus() {
+        return gameStatus;
+    }
+
+    public void setGameStatus(SpecialFlags gameStatus) {
+        this.gameStatus = gameStatus;
     }
 
 }

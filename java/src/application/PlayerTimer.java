@@ -49,12 +49,16 @@ public class PlayerTimer extends Thread{
                 timeRemaining--;
             }
 
-            try {
-                Thread.sleep(1000); 
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+            if(isTimeLimitReached() || Rules.getInstance().isCheckMate()){
+                setThreadRunning(false);
+                updateTime = false;
+            } else{
+                try {
+                    Thread.sleep(1000); 
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
-
         }
     }
 

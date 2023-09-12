@@ -343,6 +343,9 @@ public class Board{
                         movex = prevPieceName.charAt(0) + moveSquareName + "#";
                     }
                     break;
+                    
+                default:
+                    break;
             }
 
         }else{
