@@ -1,7 +1,6 @@
 package application;
 
 import java.time.LocalDateTime;
-
 import processing.core.PApplet;
 
 public class PlayerTimer extends Thread{
@@ -26,25 +25,18 @@ public class PlayerTimer extends Thread{
         this.running = running;
         this.threadRunning = true;
         this.currentTime = timeRemaining;
-        this.updateTime = false;
+        this.updateTime = true;
         this.board = board;
         this.p = p;
         this.x = board.getBorder() + (board.getSquareW() * 8) + 20;
         this.y = y;
         this.boxWidth = 150;
         this.boxHeight = 100;
-        renderTextBox();
-        updatePlayersTime();
+        render();
     }
 
     public void run(){
         while(threadRunning){
-            try {
-                Thread.sleep(1000); 
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-
             if(running){
                 if(currentTime != timeRemaining){
                     updateTime = true;
@@ -56,7 +48,26 @@ public class PlayerTimer extends Thread{
                 }
                 timeRemaining--;
             }
+
+            try {
+                Thread.sleep(1000); 
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
         }
+    }
+
+    public boolean isThreadRunning(){
+        return threadRunning;
+    }
+
+    public void setThreadRunning(boolean threadRunning){
+        this.threadRunning = threadRunning;
+    }
+
+    public boolean isTimeLimitReached(){
+        return currentTime == 0;
     }
 
     public void pauseTime(){
