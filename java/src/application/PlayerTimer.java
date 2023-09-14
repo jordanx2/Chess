@@ -51,7 +51,7 @@ public class PlayerTimer extends Thread{
 
             if(isTimeLimitReached() || Rules.getInstance().isCheckMate()){
                 setThreadRunning(false);
-                updateTime = false;
+                PlaySound.getInstance(p).addSound(SpecialFlags.TIME_OUT);
             } else{
                 try {
                     Thread.sleep(1000); 
@@ -94,10 +94,14 @@ public class PlayerTimer extends Thread{
     }
 
     public void updatePlayersTime(){
+        String time = getTimeRemaining();
+        if(isTimeLimitReached()){
+            time = "0";
+        }
         p.textAlign(PApplet.CENTER, PApplet.CENTER); 
         p.textSize(24); 
         p.fill(255);
-        p.text(getTimeRemaining(), x, y, boxWidth, boxHeight);
+        p.text(time, x, y, boxWidth, boxHeight);
         p.textAlign(PApplet.LEFT, PApplet.BASELINE);
     }
 

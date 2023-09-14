@@ -24,7 +24,8 @@ public class Movement {
                                 if(isSquareOccupied(board, idx)){
                                     if(canAttackPiece(board, idx, index)){
                                         moves[idx] = true;
-                                    }   
+                                    }
+                                    
                                 } else{
                                     moves[idx] = true;
                                 }
@@ -36,8 +37,8 @@ public class Movement {
                             if(isSquareOccupied(board, idx)){
                                 if(canAttackPiece(board, idx, index)){
                                     moves[idx] = true;
-                                    break loop;
                                 }
+                                break loop;
                             } else{
                                 moves[idx] = true;
                             }

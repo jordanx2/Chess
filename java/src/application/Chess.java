@@ -18,6 +18,7 @@ public class Chess extends PApplet{
     int boardSpawnY;
     PlayerTimer whiteTimer;
     PlayerTimer blackTimer;
+    PlaySound playSound;
     
     public void settings() {
         size(1000, 900);             
@@ -39,11 +40,13 @@ public class Chess extends PApplet{
         moveCounter = 1;
         promotionBlock = PromotionBlock.getInstance();
 
-        int timeConstraint = 300;
+        int timeConstraint = 10;
         whiteTimer = new PlayerTimer(timeConstraint, true, this, board, board.getBorder() + (board.getSquareW() * 7));
         blackTimer = new PlayerTimer(timeConstraint, false, this, board, board.getBorder());
+        playSound = PlaySound.getInstance(this);
         whiteTimer.start();
         blackTimer.start();
+        playSound.start();
     }
 
     public void mouseReleased(){

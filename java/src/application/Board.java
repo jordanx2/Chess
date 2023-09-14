@@ -45,7 +45,7 @@ public class Board{
         buffer = new String[buffSize];
         buffer[0] = String.valueOf(moveCounterLog);
         captureGrid = PiecesCaptured.getInstance(this, p);
-        playSound = new PlaySound(p);
+        playSound = PlaySound.getInstance(p);
         
         for(int i = 0; i < 8; i++){
             for(int j = 0; j < 8; j++){
@@ -179,8 +179,8 @@ public class Board{
                 flag1 = SpecialFlags.CHECK;
             }
         }
+        playSound.addSound(flag1);
         registerMove(previousIndex, moveIndex, flag1, flag2, true);
-        playSound.play(flag1);
         
     }
 
